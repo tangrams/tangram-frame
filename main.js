@@ -22,7 +22,7 @@ map = (function () {
     var scene_url = 'scene.yaml';
 
     // If there is a query, use it as the scene_url
-    let query = window.location.search.slice(1);
+    var query = window.location.search.slice(1);
     if (query) {
         scene_url = query;
     }

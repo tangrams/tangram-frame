@@ -33,9 +33,7 @@ map = (function () {
 
     // If there is a query, use it as the scene_url
     var query = parseQuery(window.location.search.slice(1));
-    console.log('query:', query);
     if (query.url) {
-        console.log('query:', query.url);
         scene_url = query.url;
     }
 
@@ -51,7 +49,8 @@ map = (function () {
     });
 
     if (query.quiet) {
-        layer.attributionControl = false;
+        layer.options.attribution = "";
+        map.attributionControl.setPrefix('');
         window.addEventListener("load", function() {
             document.getElementById("mz-bug").style.display = "none";
             document.getElementById("mz-citysearch").style.display = "none";

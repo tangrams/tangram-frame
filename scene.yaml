@@ -24,19 +24,19 @@ layers:
         data: { source: osm }
         draw:
             polygons:
-                order: 2
+                order: function() { return feature.sort_key; }
                 color: '#353535'
     earth:
         data: { source: osm }
         draw:
             polygons:
-                order: 0
+                order: function() { return feature.sort_key; }
                 color: '#555'
     landuse:
         data: { source: osm }
         draw:
             polygons:
-                order: 1
+                order: function() { return feature.sort_key; }
                 color: '#666'
     roads:
         data: { source: osm }
@@ -44,14 +44,14 @@ layers:
             not: { kind: [rail, ferry] }
         draw:
             lines:
-                order: 2
+                order: function() { return feature.sort_key; }
                 color: '#777'
                 width: 5
     buildings:
         data: { source: osm }
         draw:
             polygons:
-                order: 50
+                order: function() { return feature.sort_key; }
                 color: '#999'
         extruded:
             draw:

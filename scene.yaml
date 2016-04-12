@@ -17,8 +17,10 @@ styles:
                     color.rgb *= vec3(min((v_world_position.z*.001 + .5),1.));
 sources:
     osm:
-        type: TopoJSONTiles
-        url:  //vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson
+        type: TopoJSON
+        url:  https://vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson
+        max_zoom: 16
+
 layers:
     water:
         data: { source: osm }

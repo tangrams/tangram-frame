@@ -16,16 +16,6 @@ var map, scene, hash, query, scene_url;
 load = (function load() {
     /*** URL parsing ***/
 
-    // leaflet-style URL hash pattern:
-    // #[zoom],[lat],[lng]
-    var url_hash = window.location.hash.slice(1, window.location.hash.length).split('/');
-
-    if (url_hash.length == 3) {
-        map_start_location = [url_hash[1],url_hash[2], url_hash[0]];
-        // convert from strings
-        map_start_location = map_start_location.map(Number);
-    }
-
     // determine the version of Tangram, scene url, and content to load during start-up
     scene_url = 'scene.yaml';
     var scene_lib = '0.7/';
@@ -54,6 +44,16 @@ function initMap() {
         var map_start_location = [40.70531887544228, -74.00976419448853, 15]; // NYC
 
         /*** Map ***/
+
+        // leaflet-style URL hash pattern:
+        // #[zoom],[lat],[lng]
+        var url_hash = window.location.hash.slice(1, window.location.hash.length).split('/');
+
+        if (url_hash.length == 3) {
+            map_start_location = [url_hash[1],url_hash[2], url_hash[0]];
+            // convert from strings
+            map_start_location = map_start_location.map(Number);
+        }
 
         var map = L.map('map',
             {"keyboardZoomOffset" : .05}

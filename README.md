@@ -8,6 +8,11 @@ Pass the scene file through the url as a query and the location as a hash to loa
 - url: the scene file to load
 - quiet: hides attribution and UI
 - noscroll: disables scrolling for iframe embedding
+- lib: Tangram version number, defaults to most recent
+- debug: Tangram build, when this is not present defaults to min
 
-Example:
-http://tangrams.github.io/tangram-frame/?url=https://raw.githubusercontent.com/tangrams/tangram-sandbox/gh-pages/styles/blueprint.yaml&noscroll&quiet#15/40.7053/-74.0097
+Examples:
+
+http://tangrams.github.io/tangram-frame/?url=https://raw.githubusercontent.com/tangrams/tangram-sandbox/gh-pages/styles/blueprint.yaml#15/40.7053/-74.0097
+
+http://tangrams.github.io/tangram-frame/?lib=0.6.0&debug&noscroll&quiet&url=https://raw.githubusercontent.com/tangrams/tangram-sandbox/gh-pages/styles/blueprint.yaml#15/40.7053/-74.0097

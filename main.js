@@ -15,6 +15,7 @@ var map, scene, hash, query, scene_url;
 
 load = (function load() {
     /*** URL parsing ***/
+
     // determine the version of Tangram, scene url, and content to load during start-up
     scene_url = 'scene.yaml';
     var scene_lib = '0.7';
@@ -46,54 +47,12 @@ load = (function load() {
         // assume it's a version # only
         lib_url = "https://mapzen.com/tangram/"+scene_lib+"/tangram."+build+".js";
     }
-    var lib_script = document.getElementById("tangramjs");
+    var lib_script = document.getElementById("library_script");
     lib_script.src = lib_url;
-// });
 }());
-
-// https://maymay.net/blog/2008/06/15/ridiculously-simple-javascript-version-string-to-object-parser/
-function parseVersionString (str) {
-    if (typeof(str) != 'string') { return false; }
-    var x = str.split('.');
-    // parse from string or default to 0 if can't parse
-    var maj = parseInt(x[0]) || 0;
-    var min = parseInt(x[1]) || 0;
-    var pat = parseInt(x[2]) || 0;
-    return {
-        major: maj,
-        minor: min,
-        patch: pat
-    }
-}
-
-function initLeaflet() {
-    var leafletcss, leafletjs;
-    // get tangram version
-    var v = window.Tangram.version;
-    // http://stackoverflow.com/a/9409894/738675
-    v = v.replace(/[^\d.-]/g, '');
-    console.log('Tangram version:', v)
-    v = parseVersionString(v);
-    if (v.major < 1 && v.minor < 8) {
-        leafletcss="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2/leaflet.css";
-        leafletjs="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2/leaflet.js";
-    } else {
-        leafletcss="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-rc.1/leaflet.css";
-        leafletjs="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-rc.1/leaflet.js";
-    }
-    document.getElementById("leafletjs").src = leafletjs;
-    document.getElementById("leafletcss").href = leafletcss;
-}
-
-function initHash() {
-    document.getElementById("leaflethash").src = "lib/leaflet-hash.js";
-    document.getElementById("mapzenui").src = "//mapzen.com/common/ui/mapzen-ui.min.js";
-}
 
 function initMap() {
     map = (function () {
-        console.log('Leaflet version:', window.L.version)
-
         'use strict';
 
         var map_start_location = [40.70531887544228, -74.00976419448853, 15]; // NYC

@@ -14,6 +14,7 @@ function parseQuery (qstr) {
 var map, scene, hash, query, scene_url;
 
 load = (function load() {
+    console.log('load')
     /*** URL parsing ***/
     // determine the version of Tangram, scene url, and content to load during start-up
     scene_url = 'scene.yaml';
@@ -85,10 +86,53 @@ function initLeaflet() {
     document.getElementById("leafletcss").href = leafletcss;
 }
 
+function leafletLoaded() {
+    console.log('leafletLoaded')
+    return new Promise(function(resolve, reject) {
+        initHash();
+        return resolve();
+    });
+}
+
+function leaflethashLoaded() {
+    console.log('leaflethashLoaded')
+    return new Promise(function(resolve, reject) {
+        resolve();
+    });
+}
+
+function tangramLoaded() {
+    console.log('tangramLoaded')
+    return new Promise(function(resolve, reject) {
+        initLeaflet();
+        return resolve();
+    });
+}
+
+function mainLoaded() {
+    console.log('mainLoaded')
+    return new Promise(function(resolve, reject) {
+        resolve();
+    });
+}
+
+function mapzenuiLoaded() {
+    console.log('mapzenuiLoaded')
+    return new Promise(function(resolve, reject) {
+        MPZN.bug();
+        resolve();
+    });
+}
+
 function initHash() {
     document.getElementById("leaflethash").src = "lib/leaflet-hash.js";
     document.getElementById("mapzenui").src = "//mapzen.com/common/ui/mapzen-ui.min.js";
 }
+
+Promise.all([tangramLoaded(), leafletLoaded()]).then(function() {
+    console.log('ready to init');
+    initMap();
+});
 
 function initMap() {
     map = (function () {
@@ -148,3 +192,8 @@ function initMap() {
 
     }());
 }
+
+
+// load leaflet and tangram
+// when leaflet is loaded, load leaflethash and mapzenui
+// when leaflet and tangram are loaded, init map

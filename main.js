@@ -14,7 +14,7 @@ function parseQuery (qstr) {
 var map, scene, hash, query, scene_url;
 
 load = (function load() {
-    console.log('load')
+    // console.log('load')
     /*** URL parsing ***/
     // determine the version of Tangram, scene url, and content to load during start-up
     scene_url = 'scene.yaml';
@@ -86,58 +86,51 @@ function initLeaflet() {
     document.getElementById("leafletcss").href = leafletcss;
 }
 
-var promise1Resolve, promise2Resolve, promise3Resolve;
-var promise1 = new Promise(function(resolve, reject) {
-        promise1Resolve = function(){
+var leafletLoadResolve, tangramLoadResolve, mapzenuiLoadResolve;
+var leafletLoad = new Promise(function(resolve, reject) {
+        leafletLoadResolve = function(){
         resolve();
     };
 });
-var promise2 = new Promise(function(resolve, reject) {
-        promise2Resolve = function(){
+var tangramLoad = new Promise(function(resolve, reject) {
+        tangramLoadResolve = function(){
         resolve();
     };
 });
-var promise3 = new Promise(function(resolve, reject) {
-        promise3Resolve = function(){
+var mapzenuiLoad = new Promise(function(resolve, reject) {
+    mapzenuiLoadResolve = function(){
         resolve();
     };
 });
 
 function leafletLoaded() {
-    console.log('leafletLoaded')
-    console.log('resolve leaflet')
+    // console.log('leafletLoaded')
     initHash();
-    promise1Resolve();
+    leafletLoadResolve();
 }
 
 function leaflethashLoaded() {
-    console.log('leaflethashLoaded')
+    // console.log('leaflethashLoaded')
     return new Promise(function(resolve, reject) {
         resolve();
     });
 }
 
 function tangramLoaded() {
-    console.log('tangramLoaded')
+    // console.log('tangramLoaded')
     initLeaflet();
-    promise2Resolve();
+    tangramLoadResolve();
 }
 
 function mainLoaded() {
-    console.log('mainLoaded')
     return new Promise(function(resolve, reject) {
         resolve();
     });
 }
 
 function mapzenuiLoaded() {
-    console.log('mapzenuiLoaded')
-    // return new Promise(function(resolve, reject) {
-    // console.log(MPZN);
-    // MPZN.bug();
-    promise3Resolve();
-    // resolve();
-    // });
+    // console.log('mapzenuiLoaded')
+    mapzenuiLoadResolve();
 }
 
 function initHash() {
@@ -146,17 +139,17 @@ function initHash() {
 }
 
 // Promise.all([tangramLoaded(), leafletLoaded()]).then(function() {
-// Promise.all([promise1, promise2, promise3]).then(function() {
-Promise.all([promise1, promise2]).then(function() {
-    console.log('tangram and leaflet go');
-    Promise.all([promise3]).then(function() {
-        console.log('ready to init');
+// Promise.all([leafletLoad, tangramLoad, mapzenuiLoad]).then(function() {
+Promise.all([leafletLoad, tangramLoad]).then(function() {
+    // console.log('tangram and leaflet go');
+    Promise.all([mapzenuiLoad]).then(function() {
+        // console.log('ready to init');
         initMap();
     });
 });
 
 function initMap() {
-    console.log('init map')
+    // console.log('init map')
     window.map = (function () {
         console.log('Leaflet version:', window.L.version)
 

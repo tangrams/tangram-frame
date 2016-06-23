@@ -107,22 +107,28 @@ var leaflethashLoad = new Promise(function(resolve, reject) {
         resolve();
     };
 });
+var uiisloaded = false;
+var hashisloaded = false;
 
 function leafletLoaded() {
     console.log('leafletLoaded')
     initHash();
-    leafletLoadResolve();
+    // leafletLoadResolve();
 }
 
 function leaflethashLoaded() {
     console.log('leaflethashLoaded')
-    leaflethashLoadResolve();
+    hashisloaded = true;
+    if (hashisloaded && uiisloaded) {
+        initMap();
+    }
+    // leaflethashLoadResolve();
 }
 
 function tangramLoaded() {
     console.log('tangramLoaded')
     initLeaflet();
-    tangramLoadResolve();
+    // tangramLoadResolve();
 }
 
 function mainLoaded() {
@@ -133,7 +139,12 @@ function mainLoaded() {
 
 function mapzenuiLoaded() {
     console.log('mapzenuiLoaded')
-    mapzenuiLoadResolve();
+    uiisloaded = true;
+    if (hashisloaded && uiisloaded) {
+        initMap();
+    }
+
+    // mapzenuiLoadResolve();
 }
 
 function initHash() {
@@ -143,16 +154,16 @@ function initHash() {
 
 // Promise.all([tangramLoaded(), leafletLoaded()]).then(function() {
 // Promise.all([leafletLoad, tangramLoad, mapzenuiLoad]).then(function() {
-Promise.all([leafletLoad, tangramLoad]).then(function() {
-    // console.log('tangram and leaflet go');
-    Promise.all([mapzenuiLoad, leaflethashLoad]).then(function() {
-        // console.log('ready to init');
-        initMap();
-    });
-});
+// Promise.all([leafletLoad, tangramLoad]).then(function() {
+//     // console.log('tangram and leaflet go');
+//     Promise.all([mapzenuiLoad, leaflethashLoad]).then(function() {
+//         // console.log('ready to init');
+//         initMap();
+//     });
+// });
 
 function initMap() {
-    // console.log('init map')
+    console.log('init map')
     window.map = (function () {
         console.log('Leaflet version:', window.L.version)
 

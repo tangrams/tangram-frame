@@ -14,7 +14,7 @@ function parseQuery (qstr) {
 var map, scene, hash, query, scene_url;
 
 load = (function load() {
-    // console.log('load')
+    console.log('load')
     /*** URL parsing ***/
     // determine the version of Tangram, scene url, and content to load during start-up
     scene_url = 'scene.yaml';
@@ -86,7 +86,7 @@ function initLeaflet() {
     document.getElementById("leafletcss").href = leafletcss;
 }
 
-var leafletLoadResolve, tangramLoadResolve, mapzenuiLoadResolve;
+var leafletLoadResolve, tangramLoadResolve, mapzenuiLoadResolve, leaflethashLoadResolve;
 var leafletLoad = new Promise(function(resolve, reject) {
         leafletLoadResolve = function(){
         resolve();
@@ -102,22 +102,25 @@ var mapzenuiLoad = new Promise(function(resolve, reject) {
         resolve();
     };
 });
+var leaflethashLoad = new Promise(function(resolve, reject) {
+    leaflethashLoadResolve = function(){
+        resolve();
+    };
+});
 
 function leafletLoaded() {
-    // console.log('leafletLoaded')
+    console.log('leafletLoaded')
     initHash();
     leafletLoadResolve();
 }
 
 function leaflethashLoaded() {
-    // console.log('leaflethashLoaded')
-    return new Promise(function(resolve, reject) {
-        resolve();
-    });
+    console.log('leaflethashLoaded')
+    leaflethashLoadResolve();
 }
 
 function tangramLoaded() {
-    // console.log('tangramLoaded')
+    console.log('tangramLoaded')
     initLeaflet();
     tangramLoadResolve();
 }
@@ -129,7 +132,7 @@ function mainLoaded() {
 }
 
 function mapzenuiLoaded() {
-    // console.log('mapzenuiLoaded')
+    console.log('mapzenuiLoaded')
     mapzenuiLoadResolve();
 }
 
@@ -142,7 +145,7 @@ function initHash() {
 // Promise.all([leafletLoad, tangramLoad, mapzenuiLoad]).then(function() {
 Promise.all([leafletLoad, tangramLoad]).then(function() {
     // console.log('tangram and leaflet go');
-    Promise.all([mapzenuiLoad]).then(function() {
+    Promise.all([mapzenuiLoad, leaflethashLoad]).then(function() {
         // console.log('ready to init');
         initMap();
     });
@@ -207,10 +210,6 @@ function initMap() {
         return map;
 
     }());
-        MPZN.bug();
+    MPZN.bug();
 }
 
-
-// load leaflet and tangram
-// when leaflet is loaded, load leaflethash and mapzenui
-// when leaflet and tangram are loaded, init map

@@ -71,7 +71,7 @@ function initLeaflet() {
     var v = window.Tangram.version;
     // http://stackoverflow.com/a/9409894/738675
     v = v.replace(/[^\d.-]/g, '');
-    console.log('Tangram version:', v)
+    // console.log('Tangram version:', v)
     v = parseVersionString(v);
     if (v.major < 1 && v.minor < 8) {
         leafletcss="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2/leaflet.css";
@@ -111,8 +111,9 @@ function mapzenuiLoaded() {
 }
 
 function initMap() {
+    bugOptions = {}
     window.map = (function () {
-        console.log('Leaflet version:', window.L.version)
+        // console.log('Leaflet version:', window.L.version)
 
         'use strict';
 
@@ -142,10 +143,12 @@ function initMap() {
         if (query.quiet) {
             layer.options.attribution = "";
             map.attributionControl.setPrefix('');
+            bugOptions = {
+                locate: false,
+                search: false
+            }
             window.addEventListener("load", function() {
                 document.getElementById("mz-bug").style.display = "none";
-                document.getElementById("mz-citysearch").style.display = "none";
-                document.getElementById("mz-geolocator").style.display = "none";
             });
         }
 
@@ -168,6 +171,6 @@ function initMap() {
         return map;
 
     }());
-    MPZN.bug();
+    MPZN.bug(bugOptions);
 }
 

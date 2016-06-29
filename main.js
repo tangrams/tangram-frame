@@ -39,12 +39,12 @@ load = (function load() {
         } else {
             // noooo you don't
             console.log('lib param error:', scene_lib, "is not a valid tangram library, defaulting to 0.7");
-            scene_lib = '0.7';
+            scene_lib = '0.8';
         }
     }
     if (scene_lib.indexOf("/") == -1) {
         // assume it's a version # only
-        lib_url = "https://mapzen.com/tangram/"+scene_lib+"/tangram."+build+".js";
+        lib_url = "//mapzen.com/tangram/"+scene_lib+"/tangram."+build+".js";
     }
     var lib_script = document.getElementById("tangramjs");
     lib_script.src = lib_url;

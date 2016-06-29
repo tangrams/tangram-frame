@@ -17,7 +17,7 @@ load = (function load() {
     /*** URL parsing ***/
     // determine the version of Tangram, scene url, and content to load during start-up
     scene_url = 'scene.yaml';
-    var scene_lib = '0.7';
+    var scene_lib = '0.8';
     var build = "min";
     query = parseQuery(window.location.search.slice(1));
     if (query.url) {

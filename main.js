@@ -39,7 +39,7 @@ load = (function load() {
         } else {
             // noooo you don't
             console.log('lib param error:', scene_lib, "is not a valid tangram library, defaulting to 0.7");
-            scene_lib = '0.7';
+            scene_lib = '0.8';
         }
     }
     if (scene_lib.indexOf("/") == -1) {

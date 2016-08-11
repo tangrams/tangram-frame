@@ -81,18 +81,9 @@ function loadLib(url) {
     var lib_script = document.getElementById("tangramjs");
     lib_script.src = url;
 }
-// split a URL string into pieces
-function splitURL(url) {
-    if (typeof url == 'undefined') return 'undefined';
-    var dir = url.substring(0, url.lastIndexOf('/')) + "/";
-    var file = url.substring(url.lastIndexOf('/')+1, url.length);
-    var ext = url.substring(url.lastIndexOf('.')+1, url.length);
-    return {"dir" : dir, "file": file, "ext": ext};
-}
 
 // load a file from a URL
 function readTextFile(file, callback) {
-    var filename = splitURL(file).file;
     var rawFile = new XMLHttpRequest();
     rawFile.overrideMimeType("application/json");
     try {
@@ -107,12 +98,6 @@ function readTextFile(file, callback) {
         }
         else if (rawFile.readyState === 4 && rawFile.status == "404") {
             console.error("404 – can't load file", file);
-            diffSay("404 - can't load file <a href='"+file+"'>"+filename+"</a>");
-        } else if (rawFile.readyState === 4) {
-            diffSay("Had trouble loading the file: <a href='"+file+"'>"+filename+"</a>");
-            if (parseURL.host == "github.com") {
-                diffSay("I notice you're trying to load a file from github, make sure you're using the \"raw\" file!");
-            }
         }
 
     }

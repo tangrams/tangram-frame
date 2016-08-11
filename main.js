@@ -46,8 +46,10 @@ load = (function load() {
         // assume it's a version # only
         lib_url = "//mapzen.com/tangram/"+scene_lib+"/tangram."+build+".js";
     }
-    var lib_script = document.getElementById("tangramjs");
+    var lib_script = document.createElement('script');
+    lib_script.onload = function() {tangramLoaded();};
     lib_script.src = lib_url;
+    document.body.appendChild(lib_script);
 }());
 
 // https://maymay.net/blog/2008/06/15/ridiculously-simple-javascript-version-string-to-object-parser/
@@ -66,9 +68,11 @@ function parseVersionString (str) {
 }
 
 function initLeaflet() {
+    console.log('initLeaflet')
     var leafletcss, leafletjs;
     // get tangram version
     var v = window.Tangram.version;
+    console.log('window.Tangram.version', window.Tangram.version)
     // http://stackoverflow.com/a/9409894/738675
     v = v.replace(/[^\d.-]/g, '');
     // console.log('Tangram version:', v)
@@ -80,22 +84,37 @@ function initLeaflet() {
         leafletcss="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-rc.1/leaflet.css";
         leafletjs="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-rc.1/leaflet.js";
     }
-    document.getElementById("leafletjs").src = leafletjs;
-    document.getElementById("leafletcss").href = leafletcss;
+    var leaflet_script = document.createElement('script');
+    leaflet_script.onload = function() {leafletLoaded();};
+    leaflet_script.src = leafletjs;
+    document.body.appendChild(leaflet_script);
+
+    var leaflet_style = document.createElement('style');
+    leaflet_style.src = leafletcss;
+    document.head.appendChild(leaflet_style);
 }
 
 var uiisloaded = false;
 var hashisloaded = false;
 
 function tangramLoaded() {
+    console.log('tangramLoaded')
     initLeaflet();
 }
 function leafletLoaded() {
+    console.log('leafletLoaded')
     initHash();
 }
 function initHash() {
-    document.getElementById("leaflethash").src = "lib/leaflet-hash.js";
-    document.getElementById("mapzenui").src = "//mapzen.com/common/ui/mapzen-ui.min.js";
+    var leaflethash = document.createElement('script');
+    leaflethash.onload = function() {leaflethashLoaded();};
+    leaflethash.src = "lib/leaflet-hash.js";
+    document.body.appendChild(leaflethash);
+
+    var mapzenui = document.createElement('script');
+    mapzenui.onload = function() {mapzenuiLoaded();};
+    mapzenui.src = "//mapzen.com/common/ui/mapzen-ui.min.js";
+    document.body.appendChild(mapzenui);
 }
 function leaflethashLoaded() {
     hashisloaded = true;

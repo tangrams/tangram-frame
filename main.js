@@ -19,6 +19,7 @@ load = (function load() {
     scene_url = 'scene.yaml';
     var scene_lib = '0.8';
     var build = "min";
+    var gist = {};
     query = parseQuery(window.location.search.slice(1));
     if (query.url) {
         scene_url = query.url;
@@ -28,6 +29,12 @@ load = (function load() {
     }
     if (query.debug) {
         build = "debug";
+    }
+    if (query.gist) {
+        console.log('gist!')
+        gist = query.gist;
+        console.log('gist:', gist)
+        console.log('gist != {}', gist != {})
     }
 
     if (scene_lib.indexOf("/") > -1) {
@@ -42,13 +49,84 @@ load = (function load() {
             scene_lib = '0.8';
         }
     }
-    if (scene_lib.indexOf("/") == -1) {
+    else if (scene_lib.indexOf("/") == -1) {
         // assume it's a version # only
         lib_url = "//mapzen.com/tangram/"+scene_lib+"/tangram."+build+".js";
     }
-    var lib_script = document.getElementById("tangramjs");
-    lib_script.src = lib_url;
+    if (gist != {}) {
+        console.log('gist!')
+        // read and interpret gist, also pass lib_url to load later
+        parseGist(gist, lib_url);
+    } else {
+        // loadLib right away
+        loadLib(lib_url);
+    }
+
 }());
+
+function parseGist(gist, lib_url) {
+    var lib = lib_url;
+    readTextFile(gist, function(text){
+        // parse API response data
+        try {
+            data = JSON.parse(text);
+        } catch(e) {
+            console.warn('Error parsing json:', e);
+            return false;
+        }
+        // extract scene yaml from gist data
+        try {
+            scene_url = data.files['scene.yaml'].raw_url;
+            loadLib(lib);
+        } catch (e) {
+            console.error(e);
+            return false;
+        }
+    });
+}
+
+function loadLib(url) {    
+    var lib_script = document.getElementById("tangramjs");
+    lib_script.src = url;
+}
+// split a URL string into pieces
+function splitURL(url) {
+    if (typeof url == 'undefined') return 'undefined';
+    var dir = url.substring(0, url.lastIndexOf('/')) + "/";
+    var file = url.substring(url.lastIndexOf('/')+1, url.length);
+    var ext = url.substring(url.lastIndexOf('.')+1, url.length);
+    return {"dir" : dir, "file": file, "ext": ext};
+}
+
+// load a file from a URL
+function readTextFile(file, callback) {
+    var filename = splitURL(file).file;
+    var rawFile = new XMLHttpRequest();
+    rawFile.overrideMimeType("application/json");
+    try {
+        rawFile.open("GET", file, true);
+    } catch (e) {
+        console.error("Error opening file:", e);
+    }
+    rawFile.onreadystatechange = function() {
+        // readyState 4 = done
+        if (rawFile.readyState === 4 && rawFile.status == "200") {
+            callback(rawFile.responseText);
+        }
+        else if (rawFile.readyState === 4 && rawFile.status == "404") {
+            console.error("404 – can't load file", file);
+            diffSay("404 - can't load file <a href='"+file+"'>"+filename+"</a>");
+        } else if (rawFile.readyState === 4) {
+            diffSay("Had trouble loading the file: <a href='"+file+"'>"+filename+"</a>");
+            if (parseURL.host == "github.com") {
+                diffSay("I notice you're trying to load a file from github, make sure you're using the \"raw\" file!");
+            }
+        }
+
+    }
+    rawFile.send(null);
+}
+
 
 // https://maymay.net/blog/2008/06/15/ridiculously-simple-javascript-version-string-to-object-parser/
 function parseVersionString (str) {

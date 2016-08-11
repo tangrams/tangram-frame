@@ -19,7 +19,6 @@ load = (function load() {
     scene_url = 'scene.yaml';
     var scene_lib = '0.8';
     var build = "min";
-    var gist = {};
     query = parseQuery(window.location.search.slice(1));
     if (query.url) {
         scene_url = query.url;
@@ -29,12 +28,6 @@ load = (function load() {
     }
     if (query.debug) {
         build = "debug";
-    }
-    if (query.gist) {
-        console.log('gist!')
-        gist = query.gist;
-        console.log('gist:', gist)
-        console.log('gist != {}', gist != {})
     }
 
     if (scene_lib.indexOf("/") > -1) {
@@ -53,10 +46,9 @@ load = (function load() {
         // assume it's a version # only
         lib_url = "//mapzen.com/tangram/"+scene_lib+"/tangram."+build+".js";
     }
-    if (gist != {}) {
-        console.log('gist!')
+    if (query.gist) {
         // read and interpret gist, also pass lib_url to load later
-        parseGist(gist, lib_url);
+        parseGist(query.gist, lib_url);
     } else {
         // loadLib right away
         loadLib(lib_url);

@@ -1,0 +1,27 @@
+machine:
+  node:
+    version: 4.4.7
+
+dependencies:
+  override:
+    - npm install -g aws-cli
+
+test:
+  override:
+    - echo 'No tests.'
+  post:
+    # For Precog.
+    - cp -R lib index.html main.js scene.yaml $CIRCLE_ARTIFACTS
+
+# For hosting on mapzen.com.
+deployment:
+  production:
+    branch: master
+    commands:
+      - aws s3 sync $CIRCLE_ARTIFACTS $AWS_PROD_DESTINATION
+      # - aws s3 sync $CIRCLE_ARTIFACTS $AWS_PROD_DESTINATION --delete
+  staging:
+    branch: gh-pages
+    commands:
+      - aws s3 sync $CIRCLE_ARTIFACTS $AWS_DEV_DESTINATION
+      # - aws s3 sync $CIRCLE_ARTIFACTS $AWS_DEV_DESTINATION --delete

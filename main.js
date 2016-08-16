@@ -42,13 +42,76 @@ load = (function load() {
             scene_lib = '0.8';
         }
     }
-    if (scene_lib.indexOf("/") == -1) {
+    else if (scene_lib.indexOf("/") == -1) {
         // assume it's a version # only
         lib_url = "//mapzen.com/tangram/"+scene_lib+"/tangram."+build+".js";
     }
-    var lib_script = document.getElementById("tangramjs");
-    lib_script.src = lib_url;
+    if (query.gist) {
+        // read and interpret gist, also pass lib_url to load later
+        parseGist(query.gist, lib_url);
+    } else {
+        // loadLib right away
+        loadLib(lib_url);
+    }
+
 }());
+
+function getGistURL(url) {
+    var gistIdRegexp = /\/\/(?:(?:gist.github.com|gist.githubusercontent.com)(?:\/[A-Za-z0-9_-]+){0,1}|api.github.com\/gists)\/([a-z0-9]+)(?:$|\/|.)/;
+    // The last capture group of the RegExp should be the gistID
+    var gistId = url.match(gistIdRegexp).pop();
+    return 'https://api.github.com/gists/' + gistId;
+}
+
+function parseGist(url, lib_url) {
+    var lib = lib_url;
+    var gist = getGistURL(url);
+    readTextFile(gist, function(text){
+        // parse API response data
+        try {
+            data = JSON.parse(text);
+        } catch(e) {
+            console.warn('Error parsing json:', e);
+            return false;
+        }
+        // extract scene yaml from gist data
+        try {
+            scene_url = data.files['scene.yaml'].raw_url;
+            loadLib(lib);
+        } catch (e) {
+            console.error(e);
+            return false;
+        }
+    });
+}
+
+function loadLib(url) {    
+    var lib_script = document.getElementById("tangramjs");
+    lib_script.src = url;
+}
+
+// load a file from a URL
+function readTextFile(file, callback) {
+    var rawFile = new XMLHttpRequest();
+    rawFile.overrideMimeType("application/json");
+    try {
+        rawFile.open("GET", file, true);
+    } catch (e) {
+        console.error("Error opening file:", e);
+    }
+    rawFile.onreadystatechange = function() {
+        // readyState 4 = done
+        if (rawFile.readyState === 4 && rawFile.status == "200") {
+            callback(rawFile.responseText);
+        }
+        else if (rawFile.readyState === 4 && rawFile.status == "404") {
+            console.error("404 – can't load file", file);
+        }
+
+    }
+    rawFile.send(null);
+}
+
 
 // https://maymay.net/blog/2008/06/15/ridiculously-simple-javascript-version-string-to-object-parser/
 function parseVersionString (str) {

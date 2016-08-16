@@ -56,8 +56,16 @@ load = (function load() {
 
 }());
 
-function parseGist(gist, lib_url) {
+function getGistURL(url) {
+    var gistIdRegexp = /\/\/(?:(?:gist.github.com|gist.githubusercontent.com)(?:\/[A-Za-z0-9_-]+){0,1}|api.github.com\/gists)\/([a-z0-9]+)(?:$|\/|.)/;
+    // The last capture group of the RegExp should be the gistID
+    var gistId = url.match(gistIdRegexp).pop();
+    return 'https://api.github.com/gists/' + gistId;
+}
+
+function parseGist(url, lib_url) {
     var lib = lib_url;
+    var gist = getGistURL(url);
     readTextFile(gist, function(text){
         // parse API response data
         try {

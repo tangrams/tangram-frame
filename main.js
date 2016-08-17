@@ -20,7 +20,10 @@ load = (function load() {
     var scene_lib = '0.8';
     var build = "min";
     query = parseQuery(window.location.search.slice(1));
-    if (query.url) {
+    if (query.scene) {
+        // ?scene= is the parameter used by Tangram Play
+        scene_url = query.scene;
+    } else if (query.url) {
         scene_url = query.url;
     }
     if (query.lib) {
@@ -85,7 +88,7 @@ function parseGist(url, lib_url) {
     });
 }
 
-function loadLib(url) {    
+function loadLib(url) {
     var lib_script = document.getElementById("tangramjs");
     lib_script.src = url;
 }
@@ -236,4 +239,3 @@ function initMap() {
     }());
     MPZN.bug(bugOptions);
 }
-

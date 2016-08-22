@@ -47,14 +47,14 @@ load = (function load() {
     }
     else if (scene_lib.indexOf("/") == -1) {
         // assume it's a version # only
-        lib_url = "//mapzen.com/tangram/"+scene_lib+"/tangram."+build+".js";
+        lib_url = "https://mapzen.com/tangram/"+scene_lib+"/tangram."+build+".js";
     }
     if (query.gist) {
         // read and interpret gist, also pass lib_url to load later
         parseGist(query.gist, lib_url);
     } else {
-        // loadLib right away
-        loadLib(lib_url);
+        // loadAllLibraries right away
+        loadAllLibraries(lib_url);
     }
 
 }());
@@ -80,17 +80,12 @@ function parseGist(url, lib_url) {
         // extract scene yaml from gist data
         try {
             scene_url = data.files['scene.yaml'].raw_url;
-            loadLib(lib);
+            loadAllLibraries(lib);
         } catch (e) {
             console.error(e);
             return false;
         }
     });
-}
-
-function loadLib(url) {
-    var lib_script = document.getElementById("tangramjs");
-    lib_script.src = url;
 }
 
 // load a file from a URL
@@ -131,6 +126,50 @@ function parseVersionString (str) {
     }
 }
 
+/**
+ * Dynamically injects a script element into the page with the provided url.
+ * Script loading is asynchronous, so `onload` property is wrapped with a
+ * Promise object and returned so that it can be chained.
+ *
+ * @param {string} url - the script URL to load.
+ */
+function injectScript(url) {
+    return new Promise(function (resolve, reject) {
+        var scriptEl = document.createElement('script');
+        scriptEl.onload = function () {
+            resolve();
+        }
+        scriptEl.onerror = function () {
+            reject('unable to load script ' + url);
+        }
+        scriptEl.src = url;
+        document.head.appendChild(scriptEl);
+    });
+}
+
+/**
+ * Loads everything in the right order. Chains promises to deal with
+ * asynchronous loading of scripts that depend on each other.
+ *
+ * @param {string} tangramUrl - the first library to load is Tangram. The
+ *      version to load is determined by load()
+ */
+function loadAllLibraries(tangramUrl) {
+    // Load Tangram first.
+    injectScript(tangramUrl)
+        .then(initLeaflet) // Then Leaflet
+        // Then hash, which depends on Leaflet
+        .then(() => {
+            return injectScript("lib/leaflet-hash.js");
+        })
+        // Finally, mapzen-UI
+        .then(() => {
+            return injectScript("https://mapzen.com/common/ui/mapzen-ui.min.js");
+        })
+        // Then initialize everything
+        .then(initMap);
+}
+
 function initLeaflet() {
     var leafletcss, leafletjs;
     // get tangram version
@@ -146,34 +185,9 @@ function initLeaflet() {
         leafletcss="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-rc.1/leaflet.css";
         leafletjs="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-rc.1/leaflet.js";
     }
-    document.getElementById("leafletjs").src = leafletjs;
     document.getElementById("leafletcss").href = leafletcss;
-}
 
-var uiisloaded = false;
-var hashisloaded = false;
-
-function tangramLoaded() {
-    initLeaflet();
-}
-function leafletLoaded() {
-    initHash();
-}
-function initHash() {
-    document.getElementById("leaflethash").src = "lib/leaflet-hash.js";
-    document.getElementById("mapzenui").src = "//mapzen.com/common/ui/mapzen-ui.min.js";
-}
-function leaflethashLoaded() {
-    hashisloaded = true;
-    if (hashisloaded && uiisloaded) {
-        initMap();
-    }
-}
-function mapzenuiLoaded() {
-    uiisloaded = true;
-    if (hashisloaded && uiisloaded) {
-        initMap();
-    }
+    return injectScript(leafletjs);
 }
 
 function initMap() {

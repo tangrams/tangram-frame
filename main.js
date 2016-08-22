@@ -167,7 +167,10 @@ function loadAllLibraries(tangramUrl) {
             return injectScript("https://mapzen.com/common/ui/mapzen-ui.min.js");
         })
         // Then initialize everything
-        .then(initMap);
+        .then(initMap)
+        .catch(function (err) {
+            console.error('Error loading libraries:', err);
+        });
 }
 
 function initLeaflet() {

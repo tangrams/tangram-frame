@@ -159,11 +159,11 @@ function loadAllLibraries(tangramUrl) {
     injectScript(tangramUrl)
         .then(initLeaflet) // Then Leaflet
         // Then hash, which depends on Leaflet
-        .then(() => {
+        .then(function() {
             return injectScript("lib/leaflet-hash.js");
         })
         // Finally, mapzen-UI
-        .then(() => {
+        .then(function() {
             return injectScript("https://mapzen.com/common/ui/mapzen-ui.min.js");
         })
         // Then initialize everything

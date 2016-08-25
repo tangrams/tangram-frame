@@ -36,9 +36,8 @@ load = (function load() {
 
     if (scene_lib.indexOf("/") > -1) {
         // assume it's a full path
-        // check that it's a tangram library
-        if (scene_lib.substr(scene_lib.length - 17) == '/tangram.debug.js' ||
-            scene_lib.substr(scene_lib.length - 15) == '/tangram.min.js') {
+        // check that it's a tangram library on a whitelisted domain
+        if (scene_lib.match(/^https?:\/\/(.*mapzen.com|localhost)(:[0-9]+)?\/.*tangram\.(min|debug)\.js$/)) {
             var lib_url = scene_lib;
         } else {
             // noooo you don't

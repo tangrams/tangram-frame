@@ -17,7 +17,8 @@ load = (function load() {
     /*** URL parsing ***/
     // determine the version of Tangram, scene url, and content to load during start-up
     scene_url = 'scene.yaml';
-    var scene_lib = '0.8';
+    var default_scene_lib = '0.9';
+    var scene_lib = default_scene_lib;
     var build = "min";
     query = parseQuery(window.location.search.slice(1));
     if (query.scene) {
@@ -41,8 +42,8 @@ load = (function load() {
             var lib_url = scene_lib;
         } else {
             // noooo you don't
-            console.log('lib param error:', scene_lib, "is not a valid tangram library, defaulting to 0.7");
-            scene_lib = '0.8';
+            console.log('lib param error:', scene_lib, "is not a valid tangram library, defaulting to " + default_scene_lib);
+            scene_lib = default_scene_lib;
         }
     }
     else if (scene_lib.indexOf("/") == -1) {

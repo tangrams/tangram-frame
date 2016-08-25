@@ -46,7 +46,7 @@ load = (function load() {
             scene_lib = default_scene_lib;
         }
     }
-    else if (scene_lib.indexOf("/") == -1) {
+    if (scene_lib.indexOf("/") == -1) {
         // assume it's a version # only
         lib_url = "https://mapzen.com/tangram/"+scene_lib+"/tangram."+build+".js";
     }

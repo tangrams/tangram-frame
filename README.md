@@ -8,7 +8,7 @@ Pass the scene file through the url as a query and the location as a hash to loa
 - url: the scene file to load
 - quiet: hides attribution and UI
 - noscroll: disables scrolling for iframe embedding
-- lib: Tangram version number, defaults to 0.8
+- lib: Tangram version number, defaults to 0.9
 - debug: Tangram build, when this is not present defaults to min
 - gist: url of a github gist saved from Tangram Play
 

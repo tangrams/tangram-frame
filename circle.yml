@@ -13,7 +13,8 @@ test:
     # For Precog.
     - cp -R lib index.html main.js scene.yaml $CIRCLE_ARTIFACTS
 
-# For hosting on mapzen.com.
+# For hosting on mapzen.com. The `master` branch is deployed to both
+# production and staging at the same time.
 deployment:
   production:
     branch: master
@@ -21,7 +22,7 @@ deployment:
       - aws s3 sync $CIRCLE_ARTIFACTS $AWS_PROD_DESTINATION
       # - aws s3 sync $CIRCLE_ARTIFACTS $AWS_PROD_DESTINATION --delete
   staging:
-    branch: gh-pages
+    branch: master
     commands:
       - aws s3 sync $CIRCLE_ARTIFACTS $AWS_DEV_DESTINATION
       # - aws s3 sync $CIRCLE_ARTIFACTS $AWS_DEV_DESTINATION --delete

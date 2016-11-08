@@ -5,7 +5,6 @@
 // Influenced by https://github.com/viljamis/feature.js/
 var detects = {
     webgl: (function () {
-        return false;
         try {
             var canvas = document.createElement('canvas');
             return !!(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')))

@@ -1,6 +1,19 @@
 /*jslint browser: true*/
 /*global Tangram, gui */
 
+// Feature detects object. Currently only does webgl.
+// Influenced by https://github.com/viljamis/feature.js/
+var detects = {
+    webgl: (function () {
+        try {
+            var canvas = document.createElement('canvas');
+            return !!(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')))
+        } catch (x) {
+            return false;
+        }
+    })()
+}
+
 function parseQuery (qstr) {
     var query = {};
     var a = qstr.split('&');
@@ -14,6 +27,11 @@ function parseQuery (qstr) {
 var map, scene, hash, query, scene_url;
 
 load = (function load() {
+    if (detects.webgl === false) {
+        displayNoWebGLMessage();
+        return;
+    }
+
     /*** URL parsing ***/
     // determine the version of Tangram, scene url, and content to load during start-up
     scene_url = 'scene.yaml';
@@ -56,7 +74,6 @@ load = (function load() {
         // loadAllLibraries right away
         loadAllLibraries(lib_url);
     }
-
 }());
 
 function getGistURL(url) {
@@ -255,4 +272,11 @@ function initMap() {
 
     }());
     MPZN.bug(bugOptions);
+}
+
+/**
+ * Displays helpful feedback to viewers when WebGL is not available on the browser.
+ */
+function displayNoWebGLMessage() {
+    document.getElementById('no-webgl').style.display = 'block';
 }

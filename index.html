@@ -29,11 +29,76 @@
             width: 100%;
             position: absolute;
         }
+
+        .notice-container {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ececec;
+            color: #444;
+            text-shadow: 0 1px white;
+            font-family: Helvetica, sans-serif;
+            line-height: 1.4;
+        }
+
+        @media (min-width: 500px) {
+            .notice-container {
+                padding-left: 80px;
+                padding-right: 80px;
+            }
+        }
+
+        @media (min-height: 500px) {
+            .notice-container {
+                padding-left: 80px;
+                padding-right: 80px;
+            }
+        }
+
+        .notice-layout {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .notice-warning-icon {
+            display: inline-block;
+            border: 4px solid #444;
+            border-radius: 50%;
+            height: 50px;
+            width: 50px;
+            font-size: 40px;
+            line-height: 54px;
+            font-family: Helvetica, sans-serif;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0 1px white;
+            box-shadow: 0 1px 0 0 white;
+        }
+
+        @media (min-height: 500px) {
+            .notice-warning-icon {
+                margin-bottom: 0.5em;
+            }
+        }
+
     </style>
   </head>
 
   <body>
     <div id="map"></div>
+    <div id="no-webgl" class="notice-container">
+      <div class="notice-layout">
+        <span class="notice-warning-icon">!</span><br>This map requires WebGL support, but your browser does not support WebGL or it is currently disabled. <a href="http://webglreport.com/">Learn more.</a>
+      </div>
+    </div>
     <script src="main.js"></script>
   </body>
 </html>

@@ -232,7 +232,8 @@ function initMap() {
         }
 
         var map = L.map('map',
-            {"keyboardZoomOffset" : .05}
+            {"keyboardZoomOffset" : .05,
+            "zoomSnap" : 0}
         );
 
         var layer = Tangram.leafletLayer({
@@ -259,7 +260,6 @@ function initMap() {
         window.layer = layer;
         scene = layer.scene;
         window.scene = scene;
-
         // setView expects format ([lat, long], zoom)
         map.setView(map_start_location.slice(0, 3), map_start_location[2]);
 

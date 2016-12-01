@@ -25,6 +25,8 @@ function parseQuery (qstr) {
 }
 
 var map, scene, hash, query, scene_url;
+var minz = 1;
+var maxz = 22;
 
 load = (function load() {
     if (detects.webgl === false) {
@@ -50,6 +52,12 @@ load = (function load() {
     }
     if (query.debug) {
         build = "debug";
+    }
+    if (query.minz) {
+        minz = query.minz;
+    }
+    if (query.maxz) {
+        maxz = query.maxz;
     }
 
     if (scene_lib.indexOf("/") > -1) {
@@ -233,7 +241,10 @@ function initMap() {
 
         var map = L.map('map',
             {"keyboardZoomOffset" : .05,
-            "zoomSnap" : 0}
+            "zoomSnap" : 0,
+            "minZoom": minz,
+            "maxZoom": maxz,
+            }
         );
 
         var layer = Tangram.leafletLayer({

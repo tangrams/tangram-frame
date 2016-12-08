@@ -59,6 +59,9 @@ load = (function load() {
     if (query.maxz) {
         maxz = query.maxz;
     }
+    if (query.maxBounds) {
+        maxbounds = query.maxBounds;
+    }
 
     if (scene_lib.indexOf("/") > -1) {
         // assume it's a full path
@@ -244,6 +247,7 @@ function initMap() {
             "zoomSnap" : 0,
             "minZoom": minz,
             "maxZoom": maxz,
+            "maxBounds": maxbounds,
             }
         );
 

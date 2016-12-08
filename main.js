@@ -62,8 +62,10 @@ load = (function load() {
     }
     if (query.maxbounds) {
         var sw_ne = query.maxbounds;
-        var a = sw_ne.split(',');      
-        maxbounds = [[a[0],a[1]],[a[2],a[3]]];
+        var a = sw_ne.split(',');
+        var sw = [a[0],a[1]];
+        var ne = [a[2],a[3]];
+        maxbounds = [sw,ne];
     }
 
     if (scene_lib.indexOf("/") > -1) {

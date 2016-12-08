@@ -61,7 +61,7 @@ load = (function load() {
         maxz = query.maxz;
     }
     if (query.maxbounds) {
-        sw_ne = query.maxbounds;
+        var sw_ne = query.maxbounds;
         var a = sw_ne.split(',');
         maxbounds = [a[0],a[1]],[a[2],a[3]];
     }

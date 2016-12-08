@@ -65,9 +65,6 @@ load = (function load() {
         console.log("url: " + sw_ne);
         var a = sw_ne.split(',');
         console.log("split: " + a);
-//         var sw = [a[0],a[1]];
-//         var ne = [a[2],a[3]];
-//         maxbounds = [sw,ne];
         maxbounds = [[a[0],a[1]],[a[2],a[3]]];
         console.log("maxbounds: " + maxbounds);
     }

@@ -27,6 +27,7 @@ function parseQuery (qstr) {
 var map, scene, hash, query, scene_url;
 var minz = 1;
 var maxz = 22;
+var maxbounds = [[-90,0],[90,180]];
 
 load = (function load() {
     if (detects.webgl === false) {
@@ -58,6 +59,17 @@ load = (function load() {
     }
     if (query.maxz) {
         maxz = query.maxz;
+    }
+    if (query.maxbounds) {
+        var max_sw_ne = query.maxbounds;
+        console.log("&max: " + max_sw_ne);
+        var a = max_sw_ne.split(',');
+        console.log("split: " + a);
+//         var sw = [a[0],a[1]];
+//         var ne = [a[2],a[3]];
+//         maxbounds = [sw,ne];
+        maxbounds = [[a[0],a[1]],[a[2],a[3]]];
+        console.log("maxbounds: " + maxbounds);
     }
 
     if (scene_lib.indexOf("/") > -1) {
@@ -244,6 +256,7 @@ function initMap() {
             "zoomSnap" : 0,
             "minZoom": minz,
             "maxZoom": maxz,
+            "maxBounds": maxbounds,
             }
         );
 

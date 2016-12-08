@@ -27,7 +27,8 @@ function parseQuery (qstr) {
 var map, scene, hash, query, scene_url;
 var minz = 1;
 var maxz = 22;
-var maxbounds = [[-90,0],[90,180]]
+var maxbounds = [[-90,0],[90,180]];
+var fitbounds = [[],[]];
 
 load = (function load() {
     if (detects.webgl === false) {
@@ -61,13 +62,22 @@ load = (function load() {
         maxz = query.maxz;
     }
     if (query.maxbounds) {
-        var sw_ne = query.maxbounds;
-        console.log("url: " + sw_ne);
-        var a = sw_ne.split(',');
+        var max_sw_ne = query.maxbounds;
+        console.log("&max: " + max_sw_ne);
+        var a = max_sw_ne.split(',');
         console.log("split: " + a);
         maxbounds = [[a[0],a[1]],[a[2],a[3]]];
         console.log("maxbounds: " + maxbounds);
     }
+    if (query.fitbounds) {
+        var fit_sw_ne = query.fitbounds;
+        console.log("&fit: " + fit_sw_ne);
+        var b = fit_sw_ne.split(',');
+        console.log("split: " + b);
+        maxbounds = [[b[0],b[1]],[b[2],b[3]]];
+        console.log("fitbounds: " + fitbounds);
+    }    
+    
 
     if (scene_lib.indexOf("/") > -1) {
         // assume it's a full path
@@ -254,6 +264,7 @@ function initMap() {
             "minZoom": minz,
             "maxZoom": maxz,
             "maxBounds": maxbounds,
+            "fitBounds": fitbounds,
             }
         );
 

@@ -62,9 +62,9 @@ load = (function load() {
     }
     if (query.maxbounds) {
         var sw_ne = query.maxbounds;
-        console.log(sw_ne);
+        console.log("url: " + sw_ne);
         var a = sw_ne.split(',');
-        console.log(a);
+        console.log("split: " + a);
         var sw = [a[0],a[1]];
         var ne = [a[2],a[3]];
         maxbounds = [sw,ne];

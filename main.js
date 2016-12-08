@@ -61,7 +61,9 @@ load = (function load() {
         maxz = query.maxz;
     }
     if (query.maxBounds) {
-        maxbounds = query.maxBounds;
+        sw_ne = query.maxBounds;
+        var a = sw_ne.split(',');
+        maxbounds = [a[0],a[1]],[a[2],a[3]];
     }
 
     if (scene_lib.indexOf("/") > -1) {

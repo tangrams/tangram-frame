@@ -27,6 +27,7 @@ function parseQuery (qstr) {
 var map, scene, hash, query, scene_url;
 var minz = 1;
 var maxz = 22;
+// do we need to define fitbounds here? hopefully not
 
 load = (function load() {
     if (detects.webgl === false) {

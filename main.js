@@ -250,7 +250,7 @@ function initMap() {
             "zoomSnap" : 0,
             "minZoom": minz,
             "maxZoom": maxz,
-            "maxBounds": maxbounds,
+            "setmaxBounds": maxbounds,
             }
         );
 

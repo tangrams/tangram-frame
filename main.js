@@ -74,7 +74,7 @@ load = (function load() {
         console.log("&fit: " + fit_sw_ne);
         var b = fit_sw_ne.split(',');
         console.log("split: " + b);
-        maxbounds = [[b[0],b[1]],[b[2],b[3]]];
+        fitbounds = [[b[0],b[1]],[b[2],b[3]]];
         console.log("fitbounds: " + fitbounds);
     }    
     

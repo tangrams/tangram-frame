@@ -27,7 +27,7 @@ function parseQuery (qstr) {
 var map, scene, hash, query, scene_url;
 var minz = 1;
 var maxz = 22;
-var maxbounds = [[-90,0],[90,180]];
+var maxbounds;
 
 load = (function load() {
     if (detects.webgl === false) {
@@ -61,15 +61,8 @@ load = (function load() {
         maxz = query.maxz;
     }
     if (query.maxbounds) {
-        var max_sw_ne = query.maxbounds;
-        console.log("&max: " + max_sw_ne);
-        var a = max_sw_ne.split(',');
-        console.log("split: " + a);
-//         var sw = [a[0],a[1]];
-//         var ne = [a[2],a[3]];
-//         maxbounds = [sw,ne];
+        var a = query.maxbounds.split(',');
         maxbounds = [[a[0],a[1]],[a[2],a[3]]];
-        console.log("maxbounds: " + maxbounds);
     }
 
     if (scene_lib.indexOf("/") > -1) {
@@ -251,14 +244,16 @@ function initMap() {
             map_start_location = map_start_location.map(Number);
         }
 
-        var map = L.map('map',
-            {"keyboardZoomOffset" : .05,
+        var options = {"keyboardZoomOffset" : .05,
             "zoomSnap" : 0,
             "minZoom": minz,
-            "maxZoom": maxz,
-            "maxBounds": maxbounds,
-            }
-        );
+            "maxZoom": maxz };
+
+        if (typeof maxbounds != 'undefined') {
+            options["maxBounds"] = maxbounds;
+        }
+
+        var map = L.map('map', options);
 
         var layer = Tangram.leafletLayer({
             scene: scene_url,

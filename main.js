@@ -140,15 +140,19 @@ function readTextFile(file, callback) {
     rawFile.send(null);
 }
 
-
 // https://maymay.net/blog/2008/06/15/ridiculously-simple-javascript-version-string-to-object-parser/
 function parseVersionString (str) {
-    if (typeof(str) != 'string') { return false; }
-    var x = str.split('.');
+    if (typeof(str) !== 'string') { return false; }
+
+    // Remove extra non-numeric characters (e.g. `v` for version), preserves dots
+    // http://stackoverflow.com/a/9409894/738675
+    var x = str.replace(/[^\d.-]/g, '');
+
+    var parts = x.split('.');
     // parse from string or default to 0 if can't parse
-    var maj = parseInt(x[0]) || 0;
-    var min = parseInt(x[1]) || 0;
-    var pat = parseInt(x[2]) || 0;
+    var maj = parseInt(parts[0], 10) || 0;
+    var min = parseInt(parts[1], 10) || 0;
+    var pat = parseInt(parts[2], 10) || 0;
     return {
         major: maj,
         minor: min,
@@ -188,13 +192,12 @@ function loadAllLibraries(tangramUrl) {
     // Load Tangram first.
     injectScript(tangramUrl)
         .then(initLeaflet) // Then Leaflet
-        // Then hash, which depends on Leaflet
         .then(function() {
-            return injectScript("lib/leaflet-hash.js");
-        })
-        // Finally, mapzen-UI
-        .then(function() {
-            return injectScript("https://mapzen.com/common/ui/mapzen-ui.min.js");
+            // Then hash and mapzen-ui, which depends on Leaflet
+            return Promise.all([
+                injectScript("lib/leaflet-hash.js"),
+                injectScript("https://mapzen.com/common/ui/mapzen-ui.min.js")
+            ])
         })
         // Then initialize everything
         .then(initMap)
@@ -206,11 +209,7 @@ function loadAllLibraries(tangramUrl) {
 function initLeaflet() {
     var leafletcss, leafletjs;
     // get tangram version
-    var v = window.Tangram.version;
-    // http://stackoverflow.com/a/9409894/738675
-    v = v.replace(/[^\d.-]/g, '');
-    // console.log('Tangram version:', v)
-    v = parseVersionString(v);
+    v = parseVersionString(window.Tangram.version);
     if (v.major < 1 && v.minor < 8) {
         leafletcss="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2/leaflet.css";
         leafletjs="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2/leaflet.js";

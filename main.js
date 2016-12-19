@@ -28,6 +28,7 @@ var map, scene, hash, query, scene_url;
 var minz = 1;
 var maxz = 22;
 var maxbounds;
+var legacyLeaflet = false;
 
 load = (function load() {
     if (detects.webgl === false) {
@@ -70,6 +71,15 @@ load = (function load() {
         // check that it's a tangram library on a whitelisted domain
         if (scene_lib.match(/^https?:\/\/(.*mapzen.com|localhost)(:[0-9]+)?\/.*tangram\.(min|debug)\.js$/)) {
             var lib_url = scene_lib;
+
+            // Check if it's a version 0.8 or lower, which uses Leaflet@1.0.0-beta.2
+            var version = lib_url.match(/\d+.\d+(?:.\d+)?/);
+            if (version && version.length > 0) {
+              var v = parseVersionString(version[0]);
+              if (v.major < 1 && v.minor < 8) {
+                  legacyLeaflet = true;
+              }
+            }
         } else {
             // noooo you don't
             console.log('lib param error:', scene_lib, "is not a valid tangram library, defaulting to " + default_scene_lib);
@@ -79,6 +89,12 @@ load = (function load() {
     if (scene_lib.indexOf("/") == -1) {
         // assume it's a version # only
         lib_url = "https://mapzen.com/tangram/"+scene_lib+"/tangram."+build+".js";
+
+        // Check if it's a version 0.8 or lower, which uses Leaflet@1.0.0-beta.2
+        var v = parseVersionString(scene_lib);
+        if (v.major < 1 && v.minor < 8) {
+            legacyLeaflet = true;
+        }
     }
     if (query.gist) {
         // read and interpret gist, also pass lib_url to load later
@@ -189,11 +205,10 @@ function injectScript(url) {
  *      version to load is determined by load()
  */
 function loadAllLibraries(tangramUrl) {
-    // Load Tangram first.
-    injectScript(tangramUrl)
-        .then(initLeaflet) // Then Leaflet
+    // Load Tangram and Leaflet first.
+    Promise.all([ injectScript(tangramUrl), initLeaflet() ])
+        // Then hash and mapzen-ui, which depends on Leaflet
         .then(function() {
-            // Then hash and mapzen-ui, which depends on Leaflet
             return Promise.all([
                 injectScript("lib/leaflet-hash.js"),
                 injectScript("https://mapzen.com/common/ui/mapzen-ui.min.js")
@@ -208,9 +223,8 @@ function loadAllLibraries(tangramUrl) {
 
 function initLeaflet() {
     var leafletcss, leafletjs;
-    // get tangram version
-    v = parseVersionString(window.Tangram.version);
-    if (v.major < 1 && v.minor < 8) {
+
+    if (legacyLeaflet === true) {
         leafletcss="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2/leaflet.css";
         leafletjs="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2/leaflet.js";
     } else {

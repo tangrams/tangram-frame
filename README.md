@@ -13,7 +13,7 @@ Pass the scene file through the url as a query and the location as a hash to loa
 - gist: url of a github gist saved from Tangram Play
 - minz: sets the Leaflet minZoom parameter
 - maxz: sets the Leaflet maxZoom parameter
-- maxbounds: sets the Leaflet MaxBounds parameter (sw lat,sw lon,ne lat,ne lon)
+- maxbounds: sets the Leaflet MaxBounds parameter in the format [sw lat],[sw lon],[ne lat],[ne lon]
 
 Examples:
 

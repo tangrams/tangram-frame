@@ -267,7 +267,6 @@ function initMap() {
         }
 
         var map = L.map('map', options);
-
         var layer = Tangram.leafletLayer({
             scene: scene_url,
             attribution: '<a href="https://mapzen.com/tangram" target="_blank">Tangram</a> | &copy; OSM contributors | <a href="https://mapzen.com/" target="_blank">Mapzen</a>'
@@ -295,10 +294,13 @@ function initMap() {
         // setView expects format ([lat, long], zoom)
         map.setView(map_start_location.slice(0, 3), map_start_location[2]);
 
+        if (typeof maxbounds != 'undefined' && query.fitbounds) {
+            map.fitBounds(maxbounds);
+        }
+
         hash = new L.Hash(map);
 
         layer.addTo(map);
-
 
         return map;
 

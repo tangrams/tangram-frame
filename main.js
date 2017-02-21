@@ -298,10 +298,12 @@ function initMap() {
           var geocoder = L.Mapzen.geocoder(DEMO_API_KEY);
           geocoder.addTo(map);
 
+          // Duplicates existing bug behavior.
+          // TODO: more appropriate links & messages.
           L.Mapzen.bug({
-              name: 'Web Map',
-              link: 'https://erasermap.com/maps',
-              tweet: '@mapzen',
+              // name: 'Web Map',
+              link: 'https://mapzen.com/',
+              tweet: 'Check out this map!',
               repo: 'https://github.com/mapzen/'
           });
 

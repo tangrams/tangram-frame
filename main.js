@@ -348,11 +348,7 @@ function displayNoWebGLMessage() {
 // *is* a valid key, just *looks like* one.
 // TODO: it's possible some legacy keys have 6 digits instead of 7; check with Evan
 function isValidMapzenApiKey(string) {
-    if (typeof string === 'string' && string.match(/[-a-z]+-[0-9a-zA-Z_-]{7}/)) {
-        return true;
-    }
-
-    return false;
+    return (typeof string === 'string' && string.match(/[-a-z]+-[0-9a-zA-Z_-]{7}/));
 }
 
 // Adapted from Tangram Play's own automatic API-key insertion code

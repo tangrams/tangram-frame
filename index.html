@@ -13,7 +13,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tangram Viewer</title>
 
-    <link id="leafletcss" rel="stylesheet" href="" />
+    <link rel="stylesheet" href="" id="leafletcss" />
+    <link rel="stylesheet" href="https://mapzen.com/js/mapzen.standalone.css" />
     <script src="lib/polyfills/promise-7.0.4.min.js"></script>
 
     <style>
@@ -87,6 +88,21 @@
             .notice-warning-icon {
                 margin-bottom: 0.5em;
             }
+        }
+
+        /* Override bug GitHub button */
+        .mz-bug-container {
+            width: 240px;
+        }
+
+        @media only screen and (max-width: 400px) {
+            .mz-bug-container {
+                width: 144px;
+            }
+        }
+
+        .mz-bug-github-link {
+            display: none;
         }
 
     </style>

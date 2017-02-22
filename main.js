@@ -24,11 +24,12 @@ function parseQuery (qstr) {
     return query;
 }
 
-var map, scene, hash, query, scene_url;
+var query, scene_url;
 var minz = 1;
 var maxz = 22;
 var maxbounds;
 var legacyLeaflet = false;
+var DEMO_API_KEY = 'search-PFZ8iFx';
 
 load = (function load() {
     if (detects.webgl === false) {
@@ -207,12 +208,19 @@ function injectScript(url) {
 function loadAllLibraries(tangramUrl) {
     // Load Tangram and Leaflet first.
     Promise.all([ injectScript(tangramUrl), initLeaflet() ])
-        // Then hash and mapzen-ui, which depends on Leaflet
+        // Then load Standalone Mapzen.js, which does not bundle Leaflet.
+        // It also ignores loading Tangram when it's already present.
         .then(function() {
+            var mapzenjs = 'https://mapzen.com/js/mapzen.standalone.min.js';
+            if (query.debug) {
+                mapzenjs = 'https://mapzen.com/js/mapzen.standalone.js';
+            }
+
+            // Also load leaflet-hash along with mapzen.js
             return Promise.all([
                 injectScript("lib/leaflet-hash.js"),
-                injectScript("https://mapzen.com/common/ui/mapzen-ui.min.js")
-            ])
+                injectScript(mapzenjs)
+            ]);
         })
         // Then initialize everything
         .then(initMap)
@@ -225,25 +233,32 @@ function initLeaflet() {
     var leafletcss, leafletjs;
 
     if (legacyLeaflet === true) {
-        leafletcss="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2/leaflet.css";
-        leafletjs="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2/leaflet.js";
+        leafletcss = 'https://unpkg.com/leaflet@1.0.0-beta.2/dist/leaflet.css';
+        leafletjs = 'https://unpkg.com/leaflet@1.0.0-beta.2/dist/leaflet.js';
+        if (query.debug) {
+          leafletjs = 'https://unpkg.com/leaflet@1.0.0-beta.2/dist/leaflet-src.js';
+        }
     } else {
-        leafletcss="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css";
-        leafletjs="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js";
+        leafletcss = 'https://unpkg.com/leaflet@1.0.3/dist/leaflet.css';
+        leafletjs = 'https://unpkg.com/leaflet@1.0.3/dist/leaflet.js';
+        if (query.debug) {
+          leafletjs = 'https://unpkg.com/leaflet@1.0.3/dist/leaflet-src.js';
+        }
     }
-    document.getElementById("leafletcss").href = leafletcss;
+    document.getElementById('leafletcss').href = leafletcss;
 
     return injectScript(leafletjs);
 }
 
 function initMap() {
-    bugOptions = {}
     window.map = (function () {
-        // console.log('Leaflet version:', window.L.version)
-
         'use strict';
 
-        var map_start_location = [40.70531887544228, -74.00976419448853, 15]; // NYC
+        var map_start_location = {
+          lat: 40.705319,
+          lng: -74.009764,
+          zoom: 15
+        }; // NYC
 
         /*** Map ***/
 
@@ -252,58 +267,62 @@ function initMap() {
         var url_hash = window.location.hash.slice(1, window.location.hash.length).split('/');
 
         if (url_hash.length == 3) {
-            map_start_location = [url_hash[1],url_hash[2], url_hash[0]];
-            // convert from strings
-            map_start_location = map_start_location.map(Number);
+            map_start_location = {
+                lat: Number(url_hash[1]),
+                lng: Number(url_hash[2]),
+                zoom: Number(url_hash[0])
+            };
         }
 
-        var options = {"keyboardZoomOffset" : .05,
-            "zoomSnap" : 0,
-            "minZoom": minz,
-            "maxZoom": maxz };
+        var options = {
+            keyboardZoomOffset: .05,
+            zoomSnap: 0,
+            minZoom: minz,
+            maxZoom: maxz,
+            attribution: '&copy; OSM contributors | <a href="https://mapzen.com/" target="_blank">Mapzen</a> | <a href="https://mapzen.com/tangram" target="_blank">Tangram</a>',
+            attributionControl: (query.quiet) ? false : true,
+            tangramOptions: {
+                scene: scene_url
+            },
+            center: [map_start_location.lat, map_start_location.lng],
+            zoom: map_start_location.zoom
+        };
 
         if (typeof maxbounds != 'undefined') {
             options["maxBounds"] = maxbounds;
         }
 
-        var map = L.map('map', options);
+        var map = L.Mapzen.map('map', options);
 
-        var layer = Tangram.leafletLayer({
-            scene: scene_url,
-            attribution: '<a href="https://mapzen.com/tangram" target="_blank">Tangram</a> | &copy; OSM contributors | <a href="https://mapzen.com/" target="_blank">Mapzen</a>'
-        });
+        if (!query.quiet) {
+          var geocoder = L.Mapzen.geocoder(DEMO_API_KEY);
+          geocoder.addTo(map);
 
-        if (query.quiet) {
-            layer.options.attribution = "";
-            map.attributionControl.setPrefix('');
-            bugOptions = {
-                locate: false,
-                search: false
-            }
-            window.addEventListener("load", function() {
-                document.getElementById("mz-bug").style.display = "none";
-            });
+          // Duplicates existing bug behavior.
+          // TODO: more appropriate links & messages.
+          L.Mapzen.bug({
+              // name: 'Web Map',
+              link: 'https://mapzen.com/',
+              tweet: 'Check out this map!',
+              repo: 'https://github.com/mapzen/'
+          });
+
+          var locator = L.Mapzen.locator();
+          locator.setPosition('bottomright');
+          locator.addTo(map);
         }
 
         if (query.noscroll) {
             map.scrollWheelZoom.disable();
         }
 
-        window.layer = layer;
-        scene = layer.scene;
-        window.scene = scene;
-        // setView expects format ([lat, long], zoom)
-        map.setView(map_start_location.slice(0, 3), map_start_location[2]);
+        window.layer = map._tangram._layer;
+        window.scene = map._tangram._layer.scene;
 
-        hash = new L.Hash(map);
-
-        layer.addTo(map);
-
+        var hash = new L.Hash(map);
 
         return map;
-
     }());
-    MPZN.bug(bugOptions);
 }
 
 /**

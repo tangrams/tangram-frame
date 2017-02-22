@@ -102,6 +102,7 @@
         }
 
         .warning-label {
+            display: none;
             box-sizing: border-box;
             position: absolute;
             width: 100%;
@@ -132,10 +133,10 @@
   <body>
     <div id="map"></div>
     <div id="warning" class="warning-label">
-      This map uses one or more Mapzen tile services without an API key.
+      This map uses one or more Mapzen vector tile services without an API key.
       <strong>
-        Keyless requests will be disabled on March 1, 2017.
-        <a href="https://mapzen.com/blog/">Learn more.</a>
+        Keyless requests will be disabled after March 1, 2017.
+        <a href="https://mapzen.com/blog/api-keys-required/">Learn more.</a>
       </strong>
     </div>
     <div id="no-webgl" class="notice-container">
@@ -144,14 +145,5 @@
       </div>
     </div>
     <script src="main.js"></script>
-    <script>
-      var el = document.getElementById('warning');
-      var rect = el.getBoundingClientRect();
-      var mapEl = document.getElementById('map');
-      console.log(rect.height);
-      mapEl.style.height = 'calc(100% - ' + rect.height + 'px)';
-      mapEl.style.top = rect.height + 'px';
-      map.invalidateSize();
-    </script>
   </body>
 </html>

@@ -284,6 +284,7 @@ function initMap() {
             tangramOptions: {
                 scene: scene_url
             },
+            apiKey: 'mapzen-xxxxxx',
             center: [map_start_location.lat, map_start_location.lng],
             zoom: map_start_location.zoom
         };
@@ -321,6 +322,11 @@ function initMap() {
 
         var hash = new L.Hash(map);
 
+        map.on('tangramloaded', function (event) {
+            var scene = event.tangramLayer.scene;
+            if (isMapzenApiKeyMissing(scene) === true) showWarning();
+        });
+
         return map;
     }());
 }
@@ -330,4 +336,67 @@ function initMap() {
  */
 function displayNoWebGLMessage() {
     document.getElementById('no-webgl').style.display = 'block';
+}
+
+// A basic check to see if an api key string looks like a valid key. Not
+// *is* a valid key, just *looks like* one.
+// TODO: it's possible some legacy keys have 6 digits instead of 7; check with Evan
+function isValidMapzenApiKey(string) {
+    if (typeof string === 'string' && string.match(/[-a-z]+-[0-9a-zA-Z_-]{7}/)) {
+        return true;
+    }
+
+    return false;
+}
+
+// Adapted from Tangram Play's own automatic API-key insertion code
+function isMapzenApiKeyMissing(scene) {
+    var keyIsMissing = false;
+
+    // The URL_PATTERN handles the old vector.mapzen.com origin (until it is fully
+    // deprecated) as well as the new v1 tile.mapzen.com endpoint.
+    // Extensions include both vector and raster tile services.
+    var URL_PATTERN = /((https?:)?\/\/(vector|tile).mapzen.com([a-z]|[A-Z]|[0-9]|\/|\{|\}|\.|\||:)+(topojson|geojson|mvt|png|tif|gz))/;
+
+    for (var i = 0, j = Object.keys(scene.config.sources); i < j.length; i++) {
+        var source = scene.config.sources[j[i]];
+        var valid = false;
+
+        // Check if the source URL is a Mapzen-hosted vector tile service
+        if (!source.url.match(URL_PATTERN)) continue;
+
+        // Check if the API key is set on the params object
+        if (source.url_params && source.url_params.api_key) {
+            var apiKey = source.url_params.api_key;
+            var globalApi = scene.config.global.sdk_mapzen_api_key;
+            // Check if the global property is valid
+            if (apiKey === 'global.sdk_mapzen_api_key' && isValidMapzenApiKey(globalApi)) {
+                valid = true;
+            } else if (isValidMapzenApiKey(apiKey)) {
+                valid = true;
+            }
+        }
+        // Check if there is an api_key param in the query string
+        else if (source.url.match(/(\?|&)api_key=[-a-z]+-[0-9a-zA-Z_-]{7}/)) {
+            valid = true;
+        }
+
+        if (!valid) {
+            keyIsMissing = true;
+            break;
+        }
+    }
+
+    return keyIsMissing;
+}
+
+function showWarning() {
+    var el = document.getElementById('warning');
+    el.style.display = 'block';
+    var rect = el.getBoundingClientRect();
+    var mapEl = document.getElementById('map');
+    console.log(rect.height);
+    mapEl.style.height = 'calc(100% - ' + rect.height + 'px)';
+    mapEl.style.top = rect.height + 'px';
+    map.invalidateSize();
 }

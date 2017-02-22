@@ -18,13 +18,13 @@ styles:
 sources:
     osm:
         type: TopoJSON
-        url:  https://vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson
+        url:  https://tile.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.topojson
         url_params:
             api_key: global.sdk_mapzen_api_key
         max_zoom: 16
 
 global:
-    sdk_mapzen_api_key: ''
+    sdk_mapzen_api_key: '' # API key will be inserted by mapzen.js
 
 layers:
     water:

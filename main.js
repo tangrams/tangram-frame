@@ -284,7 +284,9 @@ function initMap() {
             tangramOptions: {
                 scene: scene_url
             },
-            apiKey: 'mapzen-xxxxxx',
+            // Insert API key for default scene, otherwise, expect it to be
+            // provided in the scene file itself.
+            apiKey: (scene_url === 'scene.yaml') ? DEMO_API_KEY : null,
             center: [map_start_location.lat, map_start_location.lng],
             zoom: map_start_location.zoom
         };
@@ -391,12 +393,20 @@ function isMapzenApiKeyMissing(scene) {
 }
 
 function showWarning() {
+    positionWarningElements();
+    window.addEventListener('resize', positionWarningElements);
+}
+
+function positionWarningElements() {
     var el = document.getElementById('warning');
     el.style.display = 'block';
     var rect = el.getBoundingClientRect();
     var mapEl = document.getElementById('map');
-    console.log(rect.height);
     mapEl.style.height = 'calc(100% - ' + rect.height + 'px)';
     mapEl.style.top = rect.height + 'px';
+    var bugEl = document.getElementById('mz-bug');
+    if (bugEl) {
+        bugEl.style.transform = 'translateY(' + rect.height + 'px)';
+    }
     map.invalidateSize();
 }

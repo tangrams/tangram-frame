@@ -329,6 +329,10 @@ function initMap() {
             if (isMapzenApiKeyMissing(scene) === true) showWarning();
         });
 
+        // Reflow the message box after font is loaded (it has a different letter height)
+        var font = new FontFaceObserver('Poppins');
+        font.load().then(positionWarningElements);
+
         return map;
     }());
 }

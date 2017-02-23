@@ -399,11 +399,31 @@ function isMapzenApiKeyMissing(scene) {
 
 var resizeListenerAdded = false;
 
+// Optimized resize throttling - via https://developer.mozilla.org/en-US/docs/Web/Events/resize
+(function() {
+    var throttle = function(type, name, obj) {
+        obj = obj || window;
+        var running = false;
+        var func = function() {
+            if (running) { return; }
+            running = true;
+             requestAnimationFrame(function() {
+                obj.dispatchEvent(new CustomEvent(name));
+                running = false;
+            });
+        };
+        obj.addEventListener(type, func);
+    };
+
+    /* init - you can init any event */
+    throttle("resize", "optimizedResize");
+})();
+
 function showWarning() {
     positionWarningElements();
     // Prevent this listener from being added more than once.
     if (!resizeListenerAdded) {
-        window.addEventListener('resize', positionWarningElements);
+        window.addEventListener('optimizedResize', positionWarningElements);
         resizeListenerAdded = true;
     };
 }
@@ -419,5 +439,4 @@ function positionWarningElements() {
     if (bugEl) {
         bugEl.style.transform = 'translateY(' + rect.height + 'px)';
     }
-    map.invalidateSize();
 }

@@ -331,7 +331,7 @@ function initMap() {
 
         // Reflow the message box after font is loaded (it has a different letter height)
         var font = new FontFaceObserver('Poppins');
-        font.load().then(positionWarningElements);
+        font.load().then(showWarning);
 
         return map;
     }());
@@ -397,9 +397,15 @@ function isMapzenApiKeyMissing(scene) {
     return keyIsMissing;
 }
 
+var resizeListenerAdded = false;
+
 function showWarning() {
     positionWarningElements();
-    window.addEventListener('resize', positionWarningElements);
+    // Prevent this listener from being added more than once.
+    if (!resizeListenerAdded) {
+        window.addEventListener('resize', positionWarningElements);
+        resizeListenerAdded = true;
+    };
 }
 
 function positionWarningElements() {

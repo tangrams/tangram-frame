@@ -372,6 +372,11 @@ function isMapzenApiKeyMissing(scene) {
             var apiKey = source.url_params.api_key;
             var globalApi = scene.config.global.sdk_mapzen_api_key;
             // Check if the global property is valid
+            // Tangram.js compatibility note: Tangram <= v0.11.6 fires the `load`
+            // event _before_ `global` property substitution, so we theoretically
+            // need to resolve all global references for backwards compatitibility.
+            // Here, we're only using a check for the global property used by
+            // Mapzen basemaps.
             if (apiKey === 'global.sdk_mapzen_api_key' && isValidMapzenApiKey(globalApi)) {
                 valid = true;
             } else if (isValidMapzenApiKey(apiKey)) {

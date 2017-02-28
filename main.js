@@ -331,7 +331,7 @@ function initMap() {
 
         // Reflow the message box after font is loaded (it has a different letter height)
         var font = new FontFaceObserver('Poppins');
-        font.load().then(showWarning);
+        font.load().then(positionWarningElements);
 
         return map;
     }());
@@ -420,6 +420,8 @@ var resizeListenerAdded = false;
 })();
 
 function showWarning() {
+    var el = document.getElementById('warning');
+    el.style.display = 'block';
     positionWarningElements();
     // Prevent this listener from being added more than once.
     if (!resizeListenerAdded) {
@@ -430,7 +432,6 @@ function showWarning() {
 
 function positionWarningElements() {
     var el = document.getElementById('warning');
-    el.style.display = 'block';
     var rect = el.getBoundingClientRect();
     var mapEl = document.getElementById('map');
     mapEl.style.height = 'calc(100% - ' + rect.height + 'px)';

@@ -13,9 +13,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tangram Viewer</title>
 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:400,600">
     <link rel="stylesheet" href="" id="leafletcss" />
     <link rel="stylesheet" href="https://mapzen.com/js/mapzen.standalone.css" />
-    <script src="lib/polyfills/promise-7.0.4.min.js"></script>
 
     <style>
         body {
@@ -28,6 +28,10 @@
             background: rgba(0, 0, 0, 0);
             height: 100%;
             width: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             position: absolute;
         }
 
@@ -38,25 +42,14 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #ececec;
-            color: #444;
+            background-color: #fff7f8;
+            color: #2c1e3f;
             text-shadow: 0 1px white;
-            font-family: Helvetica, sans-serif;
+            font-family: 'Poppins', sans-serif;
             line-height: 1.4;
-        }
-
-        @media (min-width: 500px) {
-            .notice-container {
-                padding-left: 80px;
-                padding-right: 80px;
-            }
-        }
-
-        @media (min-height: 500px) {
-            .notice-container {
-                padding-left: 80px;
-                padding-right: 80px;
-            }
+            padding-left: 80px;
+            padding-right: 80px;
+            box-sizing: border-box;
         }
 
         .notice-layout {
@@ -71,7 +64,7 @@
 
         .notice-warning-icon {
             display: inline-block;
-            border: 4px solid #444;
+            border: 4px solid #2c1e3f;
             border-radius: 50%;
             height: 50px;
             width: 50px;
@@ -107,16 +100,52 @@
             display: none;
         }
 
+        .warning-label {
+            display: none;
+            box-sizing: border-box;
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
+            padding: 1em;
+            background-color: #ff4947;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            z-index: 2000;
+            line-height: 1.4;
+        }
+
+        .warning-label a {
+          white-space: nowrap;
+        }
+
+        .warning-label a,
+        .warning-label a:visited {
+            color: #1e0e33;
+        }
+
+        .warning-label a:active {
+            color: #2c1e3f;
+        }
     </style>
   </head>
 
   <body>
     <div id="map"></div>
+    <div id="warning" class="warning-label">
+      This map uses one or more Mapzen tile service without an API key.
+      <strong>
+        Starting March 1, 2017, keyless requests will be rejected.
+        <a href="https://mapzen.com/blog/api-keys-required/">Learn more.</a>
+      </strong>
+    </div>
     <div id="no-webgl" class="notice-container">
       <div class="notice-layout">
         <span class="notice-warning-icon">!</span><br>This map requires WebGL support, but your browser does not support WebGL or it is currently disabled. <a href="http://webglreport.com/">Learn more.</a>
       </div>
     </div>
+    <script src="lib/polyfills/promise-7.0.4.min.js"></script>
+    <script src="lib/fontfaceobserver.standalone.js"></script>
     <script src="main.js"></script>
   </body>
 </html>

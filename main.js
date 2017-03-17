@@ -279,7 +279,6 @@ function initMap() {
             zoomSnap: 0,
             minZoom: minz,
             maxZoom: maxz,
-            attribution: '&copy; OSM contributors | <a href="https://mapzen.com/" target="_blank">Mapzen</a> | <a href="https://mapzen.com/tangram" target="_blank">Tangram</a>',
             attributionControl: (query.quiet) ? false : true,
             tangramOptions: {
                 scene: scene_url
@@ -313,6 +312,8 @@ function initMap() {
           var locator = L.Mapzen.locator();
           locator.setPosition('bottomright');
           locator.addTo(map);
+
+          map.attributionControl.addAttribution('<a href="https://mapzen.com/products/tangram/">Tangram</a>');
         }
 
         if (query.noscroll) {

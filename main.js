@@ -370,7 +370,7 @@ function isMapzenApiKeyMissing(scene) {
         // Check if the API key is set on the params object
         if (source.url_params && source.url_params.api_key) {
             var apiKey = source.url_params.api_key;
-            var globalApi = scene.config.global.sdk_mapzen_api_key;
+            var globalApi = scene.config.global ? scene.config.global.sdk_mapzen_api_key : '';
             // Check if the global property is valid
             // Tangram.js compatibility note: Tangram <= v0.11.6 fires the `load`
             // event _before_ `global` property substitution, so we theoretically

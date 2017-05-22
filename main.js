@@ -97,7 +97,10 @@ load = (function load() {
             legacyLeaflet = true;
         }
     }
-    if (query.gist) {
+    if (query.api) {
+        // load scene file from api, also pass lib_url to load later
+        loadScene(query.api, lib_url);
+    } else if (query.gist) {
         // read and interpret gist, also pass lib_url to load later
         parseGist(query.gist, lib_url);
     } else {
@@ -105,6 +108,29 @@ load = (function load() {
         loadAllLibraries(lib_url);
     }
 }());
+
+function loadScene(url, lib_url) {
+    var scene = getAPIURL(url);
+    readTextFile(scene, 'YAML', function(text){
+        // extract scene yaml from gist data
+        try {
+            // scene_url = data.files['scene.yaml'].raw_url;
+            scene_url = url;
+            loadAllLibraries(lib_url);
+        } catch (e) {
+            console.error(e);
+            return false;
+        }
+    });
+}
+
+function getAPIURL(url) {
+    // 
+    //  22/148
+    // var url = '/api/scenes/'+user.id+'/'+scene.id+'/resources/kinkade-metadata.json';
+    // https://mapzen.com/api/scenes/5/616/resources/blank.yaml
+    return 'https://mapzen.com/api/scenes/' + url + '/resources/blank.yaml';
+}
 
 function getGistURL(url) {
     var gistIdRegexp = /\/\/(?:(?:gist.github.com|gist.githubusercontent.com)(?:\/[A-Za-z0-9_-]+){0,1}|api.github.com\/gists)\/([a-z0-9]+)(?:$|\/|.)/;
@@ -116,7 +142,7 @@ function getGistURL(url) {
 function parseGist(url, lib_url) {
     var lib = lib_url;
     var gist = getGistURL(url);
-    readTextFile(gist, function(text){
+    readTextFile(gist, 'JSON', function(text){
         // parse API response data
         try {
             data = JSON.parse(text);
@@ -136,9 +162,10 @@ function parseGist(url, lib_url) {
 }
 
 // load a file from a URL
-function readTextFile(file, callback) {
+function readTextFile(file, type, callback) {
     var rawFile = new XMLHttpRequest();
-    rawFile.overrideMimeType("application/json");
+    if (type === 'JSON') rawFile.overrideMimeType("application/json");
+    if (type === 'YAML') rawFile.overrideMimeType("text/x-yaml");
     try {
         rawFile.open("GET", file, true);
     } catch (e) {

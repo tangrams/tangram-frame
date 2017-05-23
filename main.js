@@ -97,7 +97,10 @@ load = (function load() {
             legacyLeaflet = true;
         }
     }
-    if (query.gist) {
+    if (query.api) {
+        // load scene file from api, also pass lib_url to load later
+        loadScene(query.api, lib_url);
+    } else if (query.gist) {
         // read and interpret gist, also pass lib_url to load later
         parseGist(query.gist, lib_url);
     } else {
@@ -106,6 +109,28 @@ load = (function load() {
     }
 }());
 
+// load a scene from the Mapzen API
+// expects a url in 'user-id/scene-id' form like '5/20'
+function loadScene(url, lib_url) {
+    readTextFile('https://mapzen.com/api/scenes/'+url, function(text){
+        // parse API response data
+        try {
+            data = JSON.parse(text);
+        } catch(e) {
+            console.warn('Error parsing json:', e);
+            return false;
+        }
+        // get scene yaml from scene metadata
+        try {
+            scene_url = data.entrypoint_url;
+            loadAllLibraries(lib_url);
+        } catch (e) {
+            console.error(e);
+            return false;
+        }
+    });
+}
+
 function getGistURL(url) {
     var gistIdRegexp = /\/\/(?:(?:gist.github.com|gist.githubusercontent.com)(?:\/[A-Za-z0-9_-]+){0,1}|api.github.com\/gists)\/([a-z0-9]+)(?:$|\/|.)/;
     // The last capture group of the RegExp should be the gistID
@@ -113,10 +138,9 @@ function getGistURL(url) {
     return 'https://api.github.com/gists/' + gistId;
 }
 
+// load a scene from a gist
 function parseGist(url, lib_url) {
-    var lib = lib_url;
-    var gist = getGistURL(url);
-    readTextFile(gist, function(text){
+    readTextFile(getGistURL(url), function(text){
         // parse API response data
         try {
             data = JSON.parse(text);
@@ -127,7 +151,7 @@ function parseGist(url, lib_url) {
         // extract scene yaml from gist data
         try {
             scene_url = data.files['scene.yaml'].raw_url;
-            loadAllLibraries(lib);
+            loadAllLibraries(lib_url);
         } catch (e) {
             console.error(e);
             return false;

@@ -109,27 +109,26 @@ load = (function load() {
     }
 }());
 
+// load a scene from the Mapzen API
+// expects a url in 'user-id/scene-id' form like '5/20'
 function loadScene(url, lib_url) {
-    var scene = getAPIURL(url);
-    // readTextFile(scene, 'YAML', function(text){
-        // extract scene yaml from gist data
+    readTextFile('https://mapzen.com/api/scenes/'+url, function(text){
+        // parse API response data
         try {
-            // scene_url = data.files['scene.yaml'].raw_url;
-            scene_url = scene;
+            data = JSON.parse(text);
+        } catch(e) {
+            console.warn('Error parsing json:', e);
+            return false;
+        }
+        // get scene yaml from scene metadata
+        try {
+            scene_url = data.entrypoint_url;
             loadAllLibraries(lib_url);
         } catch (e) {
             console.error(e);
             return false;
         }
-    // });
-}
-
-function getAPIURL(url) {
-    // 
-    //  22/148
-    // var url = '/api/scenes/'+user.id+'/'+scene.id+'/resources/kinkade-metadata.json';
-    // https://mapzen.com/api/scenes/5/616/resources/blank.yaml
-    return 'https://mapzen.com/api/scenes/' + url + '/resources/blank.yaml';
+    });
 }
 
 function getGistURL(url) {
@@ -139,10 +138,9 @@ function getGistURL(url) {
     return 'https://api.github.com/gists/' + gistId;
 }
 
+// load a scene from a gist
 function parseGist(url, lib_url) {
-    var lib = lib_url;
-    var gist = getGistURL(url);
-    readTextFile(gist, 'JSON', function(text){
+    readTextFile(getGistURL(url), function(text){
         // parse API response data
         try {
             data = JSON.parse(text);
@@ -153,7 +151,7 @@ function parseGist(url, lib_url) {
         // extract scene yaml from gist data
         try {
             scene_url = data.files['scene.yaml'].raw_url;
-            loadAllLibraries(lib);
+            loadAllLibraries(lib_url);
         } catch (e) {
             console.error(e);
             return false;
@@ -162,10 +160,9 @@ function parseGist(url, lib_url) {
 }
 
 // load a file from a URL
-function readTextFile(file, type, callback) {
+function readTextFile(file, callback) {
     var rawFile = new XMLHttpRequest();
-    if (type === 'JSON') rawFile.overrideMimeType("application/json");
-    if (type === 'YAML') rawFile.overrideMimeType("text/x-yaml");
+    rawFile.overrideMimeType("application/json");
     try {
         rawFile.open("GET", file, true);
     } catch (e) {

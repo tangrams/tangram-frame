@@ -111,17 +111,17 @@ load = (function load() {
 
 function loadScene(url, lib_url) {
     var scene = getAPIURL(url);
-    readTextFile(scene, 'YAML', function(text){
+    // readTextFile(scene, 'YAML', function(text){
         // extract scene yaml from gist data
         try {
             // scene_url = data.files['scene.yaml'].raw_url;
-            scene_url = url;
+            scene_url = scene;
             loadAllLibraries(lib_url);
         } catch (e) {
             console.error(e);
             return false;
         }
-    });
+    // });
 }
 
 function getAPIURL(url) {

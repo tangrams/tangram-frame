@@ -1,6 +1,8 @@
 /*jslint browser: true*/
 /*global Tangram, gui */
 
+// https://github.com/tangrams/tangram-frame/blob/master/main.js
+
 // Feature detects object. Currently only does webgl.
 // Influenced by https://github.com/viljamis/feature.js/
 var detects = {

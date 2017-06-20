@@ -330,7 +330,7 @@ function initMap() {
           geocoder.addTo(map);
           // Duplicates existing bug behavior.
           // TODO: more appropriate links & messages.
-          // Get scene description if data defined otherwise intialize to empty string
+          // Get scene description if data defined otherwise initialize to empty string
           if (data) { 
               infoDescription = data.description || ''; 
           } else {

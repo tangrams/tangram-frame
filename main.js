@@ -33,6 +33,8 @@ var maxbounds;
 var legacyLeaflet = false;
 var DEMO_API_KEY = 'search-PFZ8iFx';
 
+var infoDescription;
+
 load = (function load() {
     if (detects.webgl === false) {
         displayNoWebGLMessage();
@@ -326,14 +328,21 @@ function initMap() {
         if (!query.quiet) {
           var geocoder = L.Mapzen.geocoder(DEMO_API_KEY);
           geocoder.addTo(map);
-
           // Duplicates existing bug behavior.
           // TODO: more appropriate links & messages.
+          // Get scene description if data defined otherwise initialize to empty string
+          if (data) { 
+              infoDescription = data.description || ''; 
+          } else {
+              infoDescription = '';
+          }
+            
           L.Mapzen.bug({
               // name: 'Web Map',
               link: 'https://mapzen.com/',
               tweet: 'Check out this map!',
-              repo: 'https://github.com/mapzen/'
+              repo: 'https://github.com/mapzen/',
+              description: infoDescription
           });
 
           var locator = L.Mapzen.locator();

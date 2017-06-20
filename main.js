@@ -328,15 +328,13 @@ function initMap() {
         if (!query.quiet) {
           var geocoder = L.Mapzen.geocoder(DEMO_API_KEY);
           geocoder.addTo(map);
-          
           // Duplicates existing bug behavior.
           // TODO: more appropriate links & messages.
-          
-          //get scene description if data defined otherwise intiialize to empty string
+          // Get scene description if data defined otherwise intialize to empty string
           if (data) { 
-              infoDescription = data.description || ""; 
+              infoDescription = data.description || ''; 
           } else {
-              infoDescription = "";
+              infoDescription = '';
           }
             
           L.Mapzen.bug({

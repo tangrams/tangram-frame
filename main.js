@@ -341,7 +341,7 @@ function initMap() {
               // name: 'Web Map',
               link: 'https://mapzen.com/',
               tweet: 'Check out this map!',
-              repo: 'https://github.com/mapzen/',
+              // repo: 'https://github.com/mapzen/',
               description: infoDescription
           });
 

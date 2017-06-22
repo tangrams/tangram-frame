@@ -127,7 +127,7 @@ function loadScene(url, lib_url) {
         // get scene yaml from scene metadata
         try {
             scene_url = data.entrypoint_url;
-            document.title = data.name;
+            document.title = data.name + ' · Tangram Viewer';
             loadAllLibraries(lib_url);
         } catch (e) {
             console.error(e);

@@ -26,7 +26,7 @@ function parseQuery (qstr) {
     return query;
 }
 
-var query, scene_url;
+var query, scene_url, data;
 var minz = 1;
 var maxz = 22;
 var maxbounds;

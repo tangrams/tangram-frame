@@ -268,10 +268,10 @@ function initLeaflet() {
           leafletjs = 'https://unpkg.com/leaflet@1.0.0-beta.2/dist/leaflet-src.js';
         }
     } else {
-        leafletcss = 'https://unpkg.com/leaflet@1.0.3/dist/leaflet.css';
-        leafletjs = 'https://unpkg.com/leaflet@1.0.3/dist/leaflet.js';
+        leafletcss = 'https://unpkg.com/leaflet@1.2.0/dist/leaflet.css';
+        leafletjs = 'https://unpkg.com/leaflet@1.2.0/dist/leaflet.js';
         if (query.debug) {
-          leafletjs = 'https://unpkg.com/leaflet@1.0.3/dist/leaflet-src.js';
+          leafletjs = 'https://unpkg.com/leaflet@1.2.0/dist/leaflet-src.js';
         }
     }
     document.getElementById('leafletcss').href = leafletcss;

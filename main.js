@@ -44,7 +44,7 @@ load = (function load() {
     /*** URL parsing ***/
     // determine the version of Tangram, scene url, and content to load during start-up
     scene_url = 'scene.yaml';
-    var default_scene_lib = '0.12';
+    var default_scene_lib = '0.13';
     var scene_lib = default_scene_lib;
     var build = "min";
     query = parseQuery(window.location.search.slice(1));

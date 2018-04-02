@@ -36,15 +36,16 @@ var DEMO_API_KEY = 'search-PFZ8iFx';
 var infoDescription;
 
 load = (function load() {
-    if (detects.webgl === false) {
-        displayNoWebGLMessage();
-        return;
-    }
+    debugger
+    // if (detects.webgl === false) {
+    //     displayNoWebGLMessage();
+    //     return;
+    // }
 
     /*** URL parsing ***/
     // determine the version of Tangram, scene url, and content to load during start-up
     scene_url = 'scene.yaml';
-    var default_scene_lib = '0.14';
+    var default_scene_lib = '0.15.1';
     var scene_lib = default_scene_lib;
     var build = "min";
     query = parseQuery(window.location.search.slice(1));
@@ -74,7 +75,7 @@ load = (function load() {
     if (scene_lib.indexOf("/") > -1) {
         // assume it's a full path
         // check that it's a tangram library on a whitelisted domain
-        if (scene_lib.match(/^https?:\/\/(.*mapzen.com|localhost)(:[0-9]+)?\/.*tangram\.(min|debug)\.js$/)) {
+        if (scene_lib.match(/^https?:\/\/(.*nextzen.com|localhost)(:[0-9]+)?\/.*tangram\.(min|debug)\.js$/)) {
             var lib_url = scene_lib;
 
             // Check if it's a version 0.8 or lower, which uses Leaflet@1.0.0-beta.2
@@ -93,7 +94,8 @@ load = (function load() {
     }
     if (scene_lib.indexOf("/") == -1) {
         // assume it's a version # only
-        lib_url = "https://mapzen.com/tangram/"+scene_lib+"/tangram."+build+".js";
+
+        lib_url = "https://rawgit.com/tangrams/tangram/v"+scene_lib+"/dist/tangram."+build+".js";
 
         // Check if it's a version 0.8 or lower, which uses Leaflet@1.0.0-beta.2
         var v = parseVersionString(scene_lib);
@@ -101,10 +103,7 @@ load = (function load() {
             legacyLeaflet = true;
         }
     }
-    if (query.api) {
-        // load scene file from api, also pass lib_url to load later
-        loadScene(query.api, lib_url);
-    } else if (query.gist) {
+    if (query.gist) {
         // read and interpret gist, also pass lib_url to load later
         parseGist(query.gist, lib_url);
     } else {
@@ -112,29 +111,6 @@ load = (function load() {
         loadAllLibraries(lib_url);
     }
 }());
-
-// load a scene from the Mapzen API
-// expects a url in 'user-id/scene-id' form like '5/20'
-function loadScene(url, lib_url) {
-    readTextFile('https://mapzen.com/api/scenes/'+url, function(text){
-        // parse API response data
-        try {
-            data = JSON.parse(text);
-        } catch(e) {
-            console.warn('Error parsing json:', e);
-            return false;
-        }
-        // get scene yaml from scene metadata
-        try {
-            scene_url = data.entrypoint_url;
-            document.title = data.name + ' · Tangram Viewer';
-            loadAllLibraries(lib_url);
-        } catch (e) {
-            console.error(e);
-            return false;
-        }
-    });
-}
 
 function getGistURL(url) {
     var gistIdRegexp = /\/\/(?:(?:gist.github.com|gist.githubusercontent.com)(?:\/[A-Za-z0-9_-]+){0,1}|api.github.com\/gists)\/([a-z0-9]+)(?:$|\/|.)/;
@@ -240,15 +216,9 @@ function loadAllLibraries(tangramUrl) {
         // Then load Standalone Mapzen.js, which does not bundle Leaflet.
         // It also ignores loading Tangram when it's already present.
         .then(function() {
-            var mapzenjs = 'https://mapzen.com/js/mapzen.standalone.min.js';
-            if (query.debug) {
-                mapzenjs = 'https://mapzen.com/js/mapzen.standalone.js';
-            }
-
-            // Also load leaflet-hash along with mapzen.js
+            // load leaflet-hash
             return Promise.all([
                 injectScript("lib/leaflet-hash.js"),
-                injectScript(mapzenjs)
             ]);
         })
         // Then initialize everything
@@ -280,6 +250,7 @@ function initLeaflet() {
 }
 
 function initMap() {
+    debugger
     window.map = (function () {
         'use strict';
 
@@ -323,11 +294,14 @@ function initMap() {
             options["maxBounds"] = maxbounds;
         }
 
-        var map = L.Mapzen.map('map', options);
+        var map = L.map('map', options);
+
+        var layer = Tangram.leafletLayer({
+            scene: scene_url,
+            attribution: '<a href="https://github.com/tangrams/tangram" target="_blank">Tangram</a> | &copy; OSM contributors'
+        });
 
         if (!query.quiet) {
-          var geocoder = L.Mapzen.geocoder(DEMO_API_KEY);
-          geocoder.addTo(map);
           // Duplicates existing bug behavior.
           // TODO: more appropriate links & messages.
           // Get scene description if data defined otherwise initialize to empty string
@@ -337,27 +311,15 @@ function initMap() {
               infoDescription = '';
           }
             
-          L.Mapzen.bug({
-              // name: 'Web Map',
-              link: 'https://mapzen.com/',
-              tweet: 'Check out this map!',
-              // repo: 'https://github.com/mapzen/',
-              description: infoDescription
-          });
-
-          var locator = L.Mapzen.locator();
-          locator.setPosition('bottomright');
-          locator.addTo(map);
-
-          map.attributionControl.addAttribution('<a href="https://mapzen.com/products/tangram/">Tangram</a>');
+          // map.attributionControl.addAttribution('<a href="https://mapzen.com/products/tangram/">Tangram</a>');
         }
 
         if (query.noscroll) {
             map.scrollWheelZoom.disable();
         }
 
-        window.layer = map._tangram._layer;
-        window.scene = map._tangram._layer.scene;
+        window.layer = layer;
+        window.scene = layer.scene;
 
         var hash = new L.Hash(map);
 
@@ -366,10 +328,7 @@ function initMap() {
             if (isMapzenApiKeyMissing(scene) === true) showWarning();
         });
 
-        // Reflow the message box after font is loaded (it has a different letter height)
-        var font = new FontFaceObserver('Poppins');
-        font.load().then(positionWarningElements);
-
+        // console.log('map', map)
         return map;
     }());
 }
@@ -391,10 +350,9 @@ function isValidMapzenApiKey(string) {
 function isMapzenApiKeyMissing(scene) {
     var keyIsMissing = false;
 
-    // The URL_PATTERN handles the old vector.mapzen.com origin (until it is fully
-    // deprecated) as well as the new v1 tile.mapzen.com endpoint.
+    // Check for a valid nextzen datasource.
     // Extensions include both vector and raster tile services.
-    var URL_PATTERN = /((https?:)?\/\/(vector|tile).mapzen.com([a-z]|[A-Z]|[0-9]|\/|\{|\}|\.|\||:)+(topojson|geojson|mvt|png|tif|gz))/;
+    var URL_PATTERN = /((https?:)?\/\/(vector|tile).nextzen.com([a-z]|[A-Z]|[0-9]|\/|\{|\}|\.|\||:)+(topojson|geojson|mvt|png|tif|gz))/;
 
     for (var i = 0, j = Object.keys(scene.config.sources); i < j.length; i++) {
         var source = scene.config.sources[j[i]];
@@ -464,16 +422,4 @@ function showWarning() {
         window.addEventListener('optimizedResize', positionWarningElements);
         resizeListenerAdded = true;
     };
-}
-
-function positionWarningElements() {
-    var el = document.getElementById('warning');
-    var rect = el.getBoundingClientRect();
-    var mapEl = document.getElementById('map');
-    mapEl.style.height = 'calc(100% - ' + rect.height + 'px)';
-    mapEl.style.top = rect.height + 'px';
-    var bugEl = document.getElementById('mz-bug');
-    if (bugEl) {
-        bugEl.style.transform = 'translateY(' + rect.height + 'px)';
-    }
 }

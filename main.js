@@ -36,7 +36,7 @@ var DEMO_API_KEY = 'search-PFZ8iFx';
 var infoDescription;
 
 load = (function load() {
-    debugger
+    // debugger
     // if (detects.webgl === false) {
     //     displayNoWebGLMessage();
     //     return;
@@ -250,7 +250,7 @@ function initLeaflet() {
 }
 
 function initMap() {
-    debugger
+    // debugger
     window.map = (function () {
         'use strict';
 
@@ -326,6 +326,15 @@ function initMap() {
         map.on('tangramloaded', function (event) {
             var scene = event.tangramLayer.scene;
             if (isMapzenApiKeyMissing(scene) === true) showWarning();
+        });
+
+        /***** Render loop *****/
+
+        window.addEventListener('load', function () {
+            // Scene initialized
+            layer.on('init', function() {
+            });
+            layer.addTo(map);
         });
 
         // console.log('map', map)

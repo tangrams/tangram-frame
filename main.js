@@ -31,16 +31,14 @@ var minz = 1;
 var maxz = 22;
 var maxbounds;
 var legacyLeaflet = false;
-var DEMO_API_KEY = 'search-PFZ8iFx';
 
 var infoDescription;
 
 load = (function load() {
-    // debugger
-    // if (detects.webgl === false) {
-    //     displayNoWebGLMessage();
-    //     return;
-    // }
+    if (detects.webgl === false) {
+        displayNoWebGLMessage();
+        return;
+    }
 
     /*** URL parsing ***/
     // determine the version of Tangram, scene url, and content to load during start-up
@@ -213,10 +211,8 @@ function injectScript(url) {
 function loadAllLibraries(tangramUrl) {
     // Load Tangram and Leaflet first.
     Promise.all([ injectScript(tangramUrl), initLeaflet() ])
-        // Then load Standalone Mapzen.js, which does not bundle Leaflet.
-        // It also ignores loading Tangram when it's already present.
         .then(function() {
-            // load leaflet-hash
+            // Then load leaflet-hash.
             return Promise.all([
                 injectScript("lib/leaflet-hash.js"),
             ]);
@@ -283,9 +279,6 @@ function initMap() {
             tangramOptions: {
                 scene: scene_url
             },
-            // Insert API key for default scene, otherwise, expect it to be
-            // provided in the scene file itself.
-            apiKey: (scene_url === 'scene.yaml') ? DEMO_API_KEY : null,
             center: [map_start_location.lat, map_start_location.lng],
             zoom: map_start_location.zoom
         };
@@ -301,19 +294,6 @@ function initMap() {
             attribution: '<a href="https://github.com/tangrams/tangram" target="_blank">Tangram</a> | &copy; OSM contributors'
         });
 
-        if (!query.quiet) {
-          // Duplicates existing bug behavior.
-          // TODO: more appropriate links & messages.
-          // Get scene description if data defined otherwise initialize to empty string
-          if (data) { 
-              infoDescription = data.description || ''; 
-          } else {
-              infoDescription = '';
-          }
-            
-          // map.attributionControl.addAttribution('<a href="https://mapzen.com/products/tangram/">Tangram</a>');
-        }
-
         if (query.noscroll) {
             map.scrollWheelZoom.disable();
         }
@@ -325,7 +305,6 @@ function initMap() {
 
         map.on('tangramloaded', function (event) {
             var scene = event.tangramLayer.scene;
-            if (isMapzenApiKeyMissing(scene) === true) showWarning();
         });
 
         /***** Render loop *****/
@@ -347,57 +326,6 @@ function initMap() {
  */
 function displayNoWebGLMessage() {
     document.getElementById('no-webgl').style.display = 'block';
-}
-
-// A basic check to see if an api key string looks like a valid key. Not
-// *is* a valid key, just *looks like* one.
-function isValidMapzenApiKey(string) {
-    return Boolean(typeof string === 'string' && string.match(/^[-a-z]+-[0-9a-zA-Z_-]{5,7}$/));
-}
-
-// Adapted from Tangram Play's own automatic API-key insertion code
-function isMapzenApiKeyMissing(scene) {
-    var keyIsMissing = false;
-
-    // Check for a valid nextzen datasource.
-    // Extensions include both vector and raster tile services.
-    var URL_PATTERN = /((https?:)?\/\/(vector|tile).nextzen.com([a-z]|[A-Z]|[0-9]|\/|\{|\}|\.|\||:)+(topojson|geojson|mvt|png|tif|gz))/;
-
-    for (var i = 0, j = Object.keys(scene.config.sources); i < j.length; i++) {
-        var source = scene.config.sources[j[i]];
-        var valid = false;
-
-        // Check if the source URL is a Mapzen-hosted vector tile service
-        if (!source.url.match(URL_PATTERN)) continue;
-
-        // Check if the API key is set on the params object
-        if (source.url_params && source.url_params.api_key) {
-            var apiKey = source.url_params.api_key;
-            var globalApi = scene.config.global ? scene.config.global.sdk_mapzen_api_key : '';
-            // Check if the global property is valid
-            // Tangram.js compatibility note: Tangram <= v0.11.6 fires the `load`
-            // event _before_ `global` property substitution, so we theoretically
-            // need to resolve all global references for backwards compatitibility.
-            // Here, we're only using a check for the global property used by
-            // Mapzen basemaps.
-            if (apiKey === 'global.sdk_mapzen_api_key' && isValidMapzenApiKey(globalApi)) {
-                valid = true;
-            } else if (isValidMapzenApiKey(apiKey)) {
-                valid = true;
-            }
-        }
-        // Check if there is an api_key param in the query string
-        else if (source.url.match(/(\?|&)api_key=[-a-z]+-[0-9a-zA-Z_-]{7}/)) {
-            valid = true;
-        }
-
-        if (!valid) {
-            keyIsMissing = true;
-            break;
-        }
-    }
-
-    return keyIsMissing;
 }
 
 var resizeListenerAdded = false;

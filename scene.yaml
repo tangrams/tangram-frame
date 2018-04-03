@@ -16,37 +16,34 @@ styles:
                 color: |
                     color.rgb *= vec3(min((v_world_position.z*.001 + .5),1.));
 sources:
-    osm:
+    nextzen:
         type: TopoJSON
-        url:  https://tile.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.topojson
+        url: https://tile.nextzen.org/tilezen/vector/v1/256/all/{z}/{x}/{y}.topojson
         url_params:
-            api_key: global.sdk_mapzen_api_key
+            api_key: tsINU1vsQnKLU1jjCimtVw
         max_zoom: 16
-
-global:
-    sdk_mapzen_api_key: '' # API key will be inserted by mapzen.js
 
 layers:
     water:
-        data: { source: osm }
+        data: { source: nextzen }
         draw:
             polygons:
                 order: function() { return feature.sort_key || 0; }
                 color: '#353535'
     earth:
-        data: { source: osm }
+        data: { source: nextzen }
         draw:
             polygons:
                 order: function() { return feature.sort_key || 1; }
                 color: '#555'
     landuse:
-        data: { source: osm }
+        data: { source: nextzen }
         draw:
             polygons:
                 order: function() { return feature.sort_key || 2; }
                 color: '#666'
     roads:
-        data: { source: osm }
+        data: { source: nextzen }
         filter:
             not: { kind: [rail, ferry] }
         draw:
@@ -55,7 +52,7 @@ layers:
                 color: '#777'
                 width: 5
     buildings:
-        data: { source: osm }
+        data: { source: nextzen }
         draw:
             polygons:
                 order: function() { return feature.sort_key || 4; }
@@ -66,7 +63,7 @@ layers:
                     style: buildings
                     extrude: function () { return feature.height > 0 || $zoom >= 16; }
     road_labels:
-        data: { source: osm, layer: roads }
+        data: { source: nextzen, layer: roads }
         filter: { name: true, aeroway: false, tunnel: false, railway: false, not: { kind: [rail, ferry] } }
 
         highway:

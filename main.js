@@ -43,7 +43,7 @@ load = (function load() {
     /*** URL parsing ***/
     // determine the version of Tangram, scene url, and content to load during start-up
     scene_url = 'scene.yaml';
-    var default_scene_lib = '0.15.1';
+    var default_scene_lib = '0.14.2';
     var scene_lib = default_scene_lib;
     var build = "min";
     query = parseQuery(window.location.search.slice(1));
@@ -93,10 +93,12 @@ load = (function load() {
     if (scene_lib.indexOf("/") == -1) {
         // assume it's a version # only
 
-        lib_url = "https://rawgit.com/tangrams/tangram/v"+scene_lib+"/dist/tangram."+build+".js";
+        var v = parseVersionString(scene_lib);
+        var version = v.major+"."+v.minor+"."+v.patch;
+
+        lib_url = "https://rawgit.com/tangrams/tangram/v"+version+"/dist/tangram."+build+".js";
 
         // Check if it's a version 0.8 or lower, which uses Leaflet@1.0.0-beta.2
-        var v = parseVersionString(scene_lib);
         if (v.major < 1 && v.minor < 8) {
             legacyLeaflet = true;
         }

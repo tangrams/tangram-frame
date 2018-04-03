@@ -8,9 +8,8 @@ Pass the scene file through the url as a query and the location as a hash to loa
 - url: the scene file to load
 - quiet: hides attribution and UI
 - noscroll: disables scrolling for iframe embedding
-- lib: Tangram version number, defaults to 0.11
+- lib: Tangram version number, defaults to 0.14.0
 - debug: Tangram build, when this is not present defaults to min
-- api: user/scene ids of a scene in the Mapzen API, eg: '5/20'
 - gist: url of a github gist saved from Tangram Play
 - minz: sets the Leaflet minZoom parameter
 - maxz: sets the Leaflet maxZoom parameter

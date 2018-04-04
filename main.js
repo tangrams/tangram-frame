@@ -73,7 +73,7 @@ load = (function load() {
     if (scene_lib.indexOf("/") > -1) {
         // assume it's a full path
         // check that it's a tangram library on a whitelisted domain
-        if (scene_lib.match(/^https?:\/\/(.*nextzen.com|localhost)(:[0-9]+)?\/.*tangram\.(min|debug)\.js$/)) {
+        if (scene_lib.match(/^https?:\/\/(.*nextzen.org|localhost)(:[0-9]+)?\/.*tangram\.(min|debug)\.js$/)) {
             var lib_url = scene_lib;
 
             // Check if it's a version 0.8 or lower, which uses Leaflet@1.0.0-beta.2

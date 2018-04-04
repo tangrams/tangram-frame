@@ -93,11 +93,9 @@ load = (function load() {
     if (scene_lib.indexOf("/") == -1) {
         // assume it's a version # only
 
+        lib_url = "https://unpkg.com/tangram@"+scene_lib+"/dist/tangram."+build+".js";
+
         var v = parseVersionString(scene_lib);
-        var version = v.major+"."+v.minor+"."+v.patch;
-
-        lib_url = "https://rawgit.com/tangrams/tangram/v"+version+"/dist/tangram."+build+".js";
-
         // Check if it's a version 0.8 or lower, which uses Leaflet@1.0.0-beta.2
         if (v.major < 1 && v.minor < 8) {
             legacyLeaflet = true;

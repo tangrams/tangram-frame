@@ -73,7 +73,7 @@ load = (function load() {
     if (scene_lib.indexOf("/") > -1) {
         // assume it's a full path
         // check that it's a tangram library on a whitelisted domain
-        if (scene_lib.match(/^https?:\/\/(.*nextzen.com|localhost)(:[0-9]+)?\/.*tangram\.(min|debug)\.js$/)) {
+        if (scene_lib.match(/^https?:\/\/(.*nextzen.org|localhost)(:[0-9]+)?\/.*tangram\.(min|debug)\.js$/)) {
             var lib_url = scene_lib;
 
             // Check if it's a version 0.8 or lower, which uses Leaflet@1.0.0-beta.2
@@ -94,9 +94,14 @@ load = (function load() {
         // assume it's a version # only
 
         var v = parseVersionString(scene_lib);
-        var version = v.major+"."+v.minor+"."+v.patch;
-
-        lib_url = "https://rawgit.com/tangrams/tangram/v"+version+"/dist/tangram."+build+".js";
+        if (v.minor < 13) {
+            // use rawgit
+            var version = v.major+"."+v.minor+"."+v.patch;
+            lib_url = "https://rawgit.com/tangrams/tangram/v"+version+"/dist/tangram."+build+".js";
+        } else {
+            // use unpkg – it's faster
+            lib_url = "https://unpkg.com/tangram@"+scene_lib+"/dist/tangram."+build+".js";
+        }
 
         // Check if it's a version 0.8 or lower, which uses Leaflet@1.0.0-beta.2
         if (v.major < 1 && v.minor < 8) {
